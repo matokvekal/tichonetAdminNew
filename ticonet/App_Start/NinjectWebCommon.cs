@@ -66,7 +66,7 @@ namespace ticonet.App_Start
             //---------------------------------------------------------------------------------------------------------------------
             // Bind Tasks - Start
             //---------------------------------------------------------------------------------------------------------------------
-            //kernel.Bind<ITaskSending>().To<TaskSending>().InThreadScope();
+            kernel.Bind<ITaskSending>().To<TaskSending>().InThreadScope();
             kernel.Bind<ITaskPopulateLinesPlan>().To<TaskPopulateLinesPlan>().InThreadScope();
             //---------------------------------------------------------------------------------------------------------------------
             // Bind Tasks - End

@@ -1271,6 +1271,7 @@
     <Compile Include="Scheduler\TaskException.cs" />
     <Compile Include="Scheduler\TaskRegistry.cs" />
     <Compile Include="Scheduler\Tasks\TaskPopulateLinesPlan.cs" />
+    <Compile Include="Scheduler\Tasks\TaskSending.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config">
