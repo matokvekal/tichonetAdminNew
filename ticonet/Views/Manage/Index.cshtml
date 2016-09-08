@@ -1,0 +1,98 @@
+﻿﻿@using Business_Logic;
+@using Business_Logic;
+@model excelLinesViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<content style="direction:rtl">
+    <div>
+        <h2>ניהול מידע</h2>
+        <div><strong>@ViewBag.manageMessage</strong></div>
+        <p> <a href=@Url.Action("btnExportToExcel_Click", "Manage") download> הורד אקסל סטודנטים </a></p>
+        <p> <a href=@Url.Action("btnExportToExcel2", "Manage")>  הורד אקסל סטודנטים מקוצר</a></p>
+        <p> <a href=@Url.Action("btnExportToExcel4", "Manage")> הורד אקסל סמס </a></p>
+        <p> <a href=@Url.Action("btnExportToExcel3", "Manage")>  הורדל אקסל רכבים </a></p>
+        <p> <a href=@Url.Action("SendEmail", "Manage")> משלוח אימייל הסעות להורים</a></p>
+        <p> <input class="btn btn-info" type="button" value="מחק שיבוצים כפולים" onclick="location.href='@Url.Action("deleteDupStudentsTolines", "Manage")'" /></p> 
+
+
+        <div class="headerColaps">
+            <strong>סימון קוים עבור אקסל למשלוח אימייל או סמס</strong><br>
+        </div>
+        @if (@Model != null && @Model.allLines != null)
+        {
+            <div class="simpleBlock">
+                @Html.DropDownListFor(x => Model.SelectedValues, new MultiSelectList(Model.allLines, "lineNumber", "lineName", null), new { multiple = "true" })
+                <button class="greenButton" name="search" value="search">בחר</button>
+                <a href=@Url.Action("btnExportToExcel5", "Manage") class="downloadExcel" style="visibility:hidden">  הורד אקסל  </a>
+            </div>
+        }
+        else
+        {<p>"NO LINES"</p>}
+
+    </div>
+
+    <div class="navbar-inner" style="float:left;">
+      @*<button class="btn btn-info" type="button" id="addressSearch" onclick="location.href='@Url.Action("deleteDuplicatedStudentToLines", "Manage")'">*@
+         </div>
+    <div class="navbar-inner" style="float:right;">
+        <ul class="list-group">
+            <li class="list-group-item">סך משפחות במערכת <span class="badge">@ViewBag.totalFamilies</span></li>
+            <li class="list-group-item">סך סטודנטים במערכת<span class="badge">@ViewBag.totalStudents</span></li>
+            <li class="list-group-item">סך סטודנטים רשומים במערכת-שולמו דמי רישום <span class="badge">@ViewBag.totalRegistrationStudents</span></li>
+            @*כמות תלמידים בהלוך
+            כמות תלמידים בחזור
+            תלמידים המשובצים לאותה תחנה פעמיים
+            תלמידים שיש להם יותר מ2 שיבוצים*@
+            @*תלמידים שלא שולמו דמי רישום*@
+            @*סך קוים
+            סך תחנות
+            זמן נסיעה הארוך ביותר
+            זמן נסיעה הקצר ביותר
+            מספר תחנות מקסימלי בקו ומספר הקו
+            ילדים בהלוך
+ילדים משובצים לחזור
+
+סך ילדים לא שובצים
+            משפחות ללא ילדים
+            לוגין ללא משפחות*@
+
+        </ul>
+    </div>
+</content>
+    <style>
+        .list-group-item > .badge {
+            float: left;
+        }
+
+        .list-group-item {
+            background-color: black;
+        }
+    </style>
+
+<script>
+    $(".greenButton").click(function () {
+    var selectedValues = [];
+    $("#SelectedValues :selected").each(function () {
+        selectedValues.push($(this).val());
+    });
+    $.ajax({
+        url: '@Url.Action("selectLines", "Manage")',
+        type: 'Post',
+        data: JSON.stringify(selectedValues),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (returnValue) {
+            document.querySelector(".downloadExcel").style.visibility = 'visible';
+            
+            alert("ניתן להוריד את האקסל");
+        },
+        error: function (xhr, status, error) {
+            alert($("#ajaxErrorMessage1").val());
+        }
+    });
+});
+</script>
+
+

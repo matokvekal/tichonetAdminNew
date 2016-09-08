@@ -1,0 +1,553 @@
+﻿@using System.Web.Optimization
+@using Business_Logic.Enums
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
+<style>
+    .center-content {
+        text-align: center
+    }
+    .center-content > div {
+        display: inline-block
+    }
+
+    .row-action-button {
+        float: left;
+        display: inline-block;
+        cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, 0.00);
+        padding: 2px
+    }
+    .row-action-button:hover {
+        border: 1px solid white;
+    }
+    .unactive-row-action-button {
+    }
+    .active-row-action-button {
+        display: none;
+    }
+</style>
+
+<div class="content jqgrid-extended" id="dLinesTable">
+    <table id="grLines"></table>
+    <div id="pgLines" style="z-index: 1"></div>
+</div>
+
+<!--Div for render grid for Print-->
+<div hidden id="printLinesGrid"><table id="grPrintLines"></table></div>
+
+@*<i class="glyphicon glyphicon-link"></i>*@
+<div id="dlgEnterPass" title='@DEBS.Translate("Lines.EnterPass")' hidden style="width: 300px; height: 200px;">
+    <div class="center-content">
+        <div>
+            <input type="password" id="dlgEnterPass-pass" />
+        </div>
+    </div>
+    <br/>
+    <div class="center-content">
+        <div>
+            <a onclick="LineUpdatePlanning(currentEditedLineID, $('#dlgEnterPass-pass').val())">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+            </a>
+            <a onclick="CloseEnterPassDlg()">
+                <span class="glyphicon glyphicon-ban-circle"></span>
+            </a>
+        </div>
+    </div>
+</div>
+@*<i class="glyphicon glyphicon-calendar"></i>*@ 
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqGridExtend")
+    <script>
+        var CurrentWeekStart
+        function SetCurrentStartOfWeek(date) {
+            CurrentWeekStart = date
+            //alert(date)
+        }
+
+        //LineToPlanning--------------------------------------
+        var currentEditedLineID;
+
+        function LineUpdatePlanningDlg(LineId) {
+            currentEditedLineID = LineId
+            $('#dlgEnterPass-pass').val('')
+            $("#dlgEnterPass").dialog("open")
+        }
+        function CloseEnterPassDlg() {
+            $('#dlgEnterPass-pass').val('')
+            $("#dlgEnterPass").dialog("close")
+        }
+
+        function LineUpdatePlanning(LineId, pass) {
+            CloseEnterPassDlg()
+            var dataFromTheRow = $("#grLines").jqGrid('getRowData', LineId);
+            $.ajax({
+                url: '@Url.Action("SaveOrUpdate", "LinesPlan")',
+                type: "POST",
+                data: {
+                    model: {
+                        LineId: dataFromTheRow.Id,
+                        Sun: dataFromTheRow.Sun,
+                        SunTime: dataFromTheRow.SunTime,
+                        Mon: dataFromTheRow.Mon,
+                        MonTime: dataFromTheRow.MonTime,
+                        Tue: dataFromTheRow.Tue,
+                        TueTime: dataFromTheRow.TueTime,
+                        Wed: dataFromTheRow.Wed,
+                        WedTime: dataFromTheRow.WedTime,
+                        Thu: dataFromTheRow.Thu,
+                        ThuTime: dataFromTheRow.ThuTime,
+                        Fri: dataFromTheRow.Fri,
+                        FriTime: dataFromTheRow.FriTime,
+                        Sut: dataFromTheRow.Sut,
+                        SutTime: dataFromTheRow.SutTime,
+                    },
+                    pass: pass,
+                    doAppendPlan: dataFromTheRow.IsActive
+                },
+                success: function (response) {
+
+                },
+                error: function (response) {
+                    alert(response.responseJSON.message)
+                }
+            });
+        }
+
+        function CorrectLineWeekSchedules(lineID) {
+            var postData = {
+                lineID: lineID,
+                weekStart: CurrentWeekStart
+            }
+            var url = '/api' + '@Url.Action("AutoCorrectLineWeekSchedules", "LinesApi")' + "?" + $.param(postData);
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+
+                },
+                error: function (response) {
+                    //alert(response.responseJSON.message)
+                }
+            });
+        }
+
+        $(function () {
+            $("#dlgEnterPass").dialog({
+                autoOpen: false,
+                //width: 500, //$(window).width(),
+                //height: 500, //$(window).height(),
+                modal: true
+            });
+
+            //CUSTOM FORMATTERS
+            $.fn.fmatter.checkbox = hackedfmatter_checkbox
+
+            @*var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="ui-pg-div" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-link"></span></div>';
+                //res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="ui-pg-div" id="jSaveToPlanning_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-calendar"></span></div>';
+
+                res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
+                res += '</div>';
+                return res;
+            };*@
+
+            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '<div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '<div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');"><span class="glyphicon glyphicon-link"></span></div>';
+                //res += '<div title="@DEBS.Translate("Line.AutocorrectSchedules")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit unactive-row-action-button" id="jAutocorrectSchedules_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');"><span class="glyphicon glyphicon-calendar"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="row-action-button ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="row-action-button ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="row-action-button ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
+                res += '</div>';
+                return res;
+            };
+
+            @*var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" class="ui-pg-div ui-inline-edit row-action-button unactive-row-action-button" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" ><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" class="ui-pg-div row-action-button unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');"><span class="glyphicon glyphicon-link"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" class="ui-pg-div row-action-button unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');" ><span class="glyphicon glyphicon-calendar"></span></div>';
+
+                res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" class="ui-pg-div row-action-button ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" ></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.SaveRow")" class="ui-pg-div row-action-button ui-inline-save active-row-action-button" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" class="ui-pg-div row-action-button ui-inline-cancel active-row-action-button" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
+                res += '</div>';
+                return res;
+            };*@
+
+            var printWindow = null;
+            var grid = $("#grLines");
+            var gridExtend = new jqGridExtend(grid);
+            var pagerID = "#pgLines";
+
+            grid.jqGrid({
+                caption: "@DEBS.Translate("Line.GridCaption")",
+                url: '/api' + '@Url.Action("GetLines", "LinesApi")',
+                datatype: "json",
+                loadonce: false,
+                reloadAfterSubmit: true,
+                height: "100%",
+                autowidth: true,
+                regional: "il",
+                hidegrid: false,
+                multiselect: false,
+                pager: pagerID,
+                mtype: "get",
+                rowNum: 20,
+                rowList: [10,  20, 30, 40, 50],
+                viewrecords: true,
+                ignoreCase: true,
+                loadui: "disable",
+                altRows: false,
+                sortable: true,
+                altclass: "ui-state-default",
+                editurl: '/api' + '@Url.Action("EditLine", "LinesApi")',
+                sortname: 'LineName',
+                sortorder: "asc",
+                footerrow: true,
+                colNames: [
+                    '@DEBS.Translate("Line.Id")',
+                    '@DEBS.Translate("Line.LineName")',
+                    '@DEBS.Translate("Line.LineNumber")',
+                    '@DEBS.Translate("Line.Direction")',
+                    '@DEBS.Translate("Line.IsActive")',
+                    '@DEBS.Translate("Line.totalStudents")',
+                    '@DEBS.Translate("Line.Duration")',
+                    '@DEBS.Translate("Line.Sun")',
+                    '@DEBS.Translate("Line.SunTime")',
+                    '@DEBS.Translate("Line.Mon")',
+                    '@DEBS.Translate("Line.MonTime")',
+                    '@DEBS.Translate("Line.Tue")',
+                    '@DEBS.Translate("Line.TueTime")',
+                    '@DEBS.Translate("Line.Wed")',
+                    '@DEBS.Translate("Line.WedTime")',
+                    '@DEBS.Translate("Line.Thu")',
+                    '@DEBS.Translate("Line.ThuTime")',
+                    '@DEBS.Translate("Line.Fri")',
+                    '@DEBS.Translate("Line.FriTime")',
+                    '@DEBS.Translate("Line.Sut")',
+                    '@DEBS.Translate("Line.SutTime")',
+                    '@DEBS.Translate("Bus.BusDescription")',
+                    '@DEBS.Translate("Bus.Id")',
+                    '@DEBS.Translate("Bus.BusId")',
+                    '@DEBS.Translate("Bus.PlateNumber")',
+                    '@DEBS.Translate("BusCompany.Name")',
+                    '@DEBS.Translate("Bus.seats")',
+                    '@DEBS.Translate("Bus.price")',
+                    ""
+                ],
+                colModel: [
+                    { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                    { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
+                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 80, editable: true },
+                    {
+                        name: 'Direction',
+                        index: 'Direction',
+                        sorttype: "select",
+                        width: 110,
+                        editable: true,
+                        search: false,
+                        edittype: 'select',
+                        formatter: 'select',
+                        editoptions: { value: {
+                            '@((int)LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                            '@((int)LineDirection.To)': '@DEBS.Translate("General.To")',
+                            '@((int)LineDirection.From)': '@DEBS.Translate("General.From")'
+                        } }
+                    },
+                    { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 75, editable: false },
+                    { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
+                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'SunTime', index: 'SunTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'MonTime', index: 'MonTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'TueTime', index: 'TueTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'WedTime', index: 'WedTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'ThuTime', index: 'ThuTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'FriTime', index: 'FriTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'SutTime', index: 'SutTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                    { name: 'BusDescription', index: 'BusDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                    {
+                        name: 'Bus',
+                        index: 'Bus',
+                        sorttype: "text",
+                        width: 80,
+                        editable: true,
+                        search: false,
+                        edittype: "select",
+                        editoptions: {
+                            dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "LinesApi")',
+                            dataInit: function (elem) {
+                                $(elem).width('94%');  // set the width for dropdown
+                            },
+                            postData: function(rowid, value, cmName) {
+                                return {
+                                    lineId: rowid
+                                }
+                            },
+                            buildSelect: function(data) {
+                                var response = jQuery.parseJSON(data);
+                                var s = '<select>';
+                                if (response && response.Data.length) {
+                                    for (var i = 0, l = response.Data.length; i < l; i++) {
+                                        var ri = response.Data[i];
+                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Title + '</option>';
+                                    }
+                                }
+                                return s + "</select>";
+                            }
+                        }
+                    },
+                    { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: false, search: false },
+                    { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
+                    {
+                        name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: true,
+                        stype: "select",
+                        searchoptions: {
+                            dataUrl: '/api' + '@Url.Action("GetCompaniesFilter", "LinesApi")',
+                            buildSelect: function (data) {
+                                var response = jQuery.parseJSON(data);
+                                var s = '<select>';
+                                if (response && response.Data.length) {
+                                    for (var i = 0, l = response.Data.length; i < l; i++) {
+                                        var ri = response.Data[i];
+                                        //' + (ri.Value == 2 ? 'selected ' : '') + '
+                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                    }
+                                }
+                                return s + "</select>";
+                            }
+                        }
+                    },
+                    { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
+                    { name: 'price', index: 'price', sorttype: "text", width: 110, editable: false, search: false },
+                    {
+                        name: 'ActionsBtn',
+                        index: 'ActionsBtn',
+                        width: 180,
+                        align: 'center',
+                        search: false,
+                        formatter: lineActionsFormatter,
+                    },
+                ],
+                saveAfterSelect: true,
+                beforeSelectRow: function (rowid) {
+                    gridExtend.restore(rowid);
+                    return false;
+                },
+                ondblClickRow: function (rowid, iRow, iCol) {
+                    gridExtend.editRow(rowid);
+                },
+                loadComplete: function (data) {
+                    gridExtend.populateDescription(data);
+
+                    var ids = grid.jqGrid('getDataIDs');
+                    for (var i = 0; i < ids.length; i++) {
+                        var id = ids[i];
+                        var totalStudents = parseInt(grid.jqGrid('getCell', id, 'totalStudents'));
+                        var seats = parseInt(grid.jqGrid('getCell', id, 'seats'));
+                        if (totalStudents > 0 && seats > 0 && totalStudents > seats) {
+                            grid.jqGrid('setCell', id, 'totalStudents', '', { 'background-color': '#AA0000' });
+                            grid.jqGrid('setCell', id, 'seats', '', { 'background-color': '#AA0000' });
+                        }
+                    }
+
+                    var postData = grid.jqGrid('getGridParam', 'postData');
+                    var urlGetTotal = '/api' + "@Url.Action("GetTotal", "LinesApi")";
+                    var url = urlGetTotal + "?" + $.param(postData);
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            var footData = {
+                                LineName: '@DEBS.Translate("grid.Total")',
+                                totalStudents: data.Data.Students,
+                                seats: data.Data.Seats,
+                                price: data.Data.Price
+                            }
+                            AppendArrAsNamedFields(footData, data.Data.WeekDayPrices, ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sut'])
+                            grid.footerData('set', footData);
+                        }
+                    })
+                    $.ajax({
+                        url: '/api' + '@Url.Action("GetCurrentStartOfWeek", "LinesApi")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            SetCurrentStartOfWeek(data.Data)
+                        }
+                    })
+                }
+            })
+                .navGrid(pagerID, {
+                    add: false,
+                    edit: false,
+                    del: false,
+                    refresh: true,
+                    refreshtitle: "@DEBS.Translate("grid.Reload")",
+                    search: false,
+                    view: false,
+                    closeAfterAdd: true
+                }
+                )
+                .navButtonAdd(pagerID, {
+                    id: "print",
+                    buttonicon: "ui-icon-print",
+                    caption: "",
+                    title: "@DEBS.Translate("grid.Print")",
+                    onClickButton: function() {
+                        var postData = grid.jqGrid('getGridParam', 'postData');
+                        var urlGetExcel = '/api' + "@Url.Action("GetPrint", "LinesApi")";
+                        var url = urlGetExcel + "?" + $.param(postData);
+                        var printGrid = $("#grPrintLines");
+                        if (printWindow == null || printWindow.closed) {
+                            printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
+                        } else {
+                            printWindow.focus();
+                        }
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf-8',
+                            success: function(data) {
+                                if (printWindow != undefined) {
+                                    printGrid.jqGrid({
+                                        datatype: "local",
+                                        data: data,
+                                        footerrow: true,
+                                        rowNum: -1,
+                                        colNames: [
+                                            '@DEBS.Translate("Line.LineName")',
+                                            '@DEBS.Translate("Line.LineNumber")',
+                                            '@DEBS.Translate("Line.Direction")',
+                                            '@DEBS.Translate("Line.IsActive")',
+                                            '@DEBS.Translate("Line.totalStudents")',
+                                            '@DEBS.Translate("Line.Duration")',
+                                            '@DEBS.Translate("Line.Sun")',
+                                            '@DEBS.Translate("Line.Mon")',
+                                            '@DEBS.Translate("Line.Tue")',
+                                            '@DEBS.Translate("Line.Wed")',
+                                            '@DEBS.Translate("Line.Thu")',
+                                            '@DEBS.Translate("Line.Fri")',
+                                            '@DEBS.Translate("Line.Sut")',
+                                            '@DEBS.Translate("Bus.BusIdDescription")',
+                                            '@DEBS.Translate("Bus.PlateNumber")',
+                                            '@DEBS.Translate("BusCompany.Name")',
+                                            '@DEBS.Translate("Bus.seats")',
+                                            '@DEBS.Translate("Bus.price")',
+                                        ],
+                                        colModel: [
+                                            { name: "LineName" },
+                                            { name: "LineNumber" },
+                                            {
+                                                name: "Direction", formatter: 'select',
+                                                editoptions: {
+                                                    value: {
+                                                        '@((int)LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                                                        '@((int)LineDirection.To)': '@DEBS.Translate("General.To")',
+                                                        '@((int)LineDirection.From)': '@DEBS.Translate("General.From")'
+                                                    }
+                                                }
+                                            },
+                                            { name: "IsActive" },
+                                            { name: "totalStudents" },
+                                            { name: "Duration" },
+                                            { name: "Sun" },
+                                            { name: "Mon" },
+                                            { name: "Tue" },
+                                            { name: "Wed" },
+                                            { name: "Thu" },
+                                            { name: "Fri" },
+                                            { name: "Sut" },
+                                            { name: "BusIdDescription" },
+                                            { name: "PlateNumber" },
+                                            { name: "BusCompanyName" },
+                                            { name: "seats" },
+                                            { name: "price" },
+                                        ],
+                                        height: "auto",
+                                        loadComplete: function () {
+                                            var totalStudents = printGrid.jqGrid('getCol', 'totalStudents', false, 'sum'),
+                                                seats = printGrid.jqGrid('getCol', 'seats', false, 'sum'),
+                                                price = printGrid.jqGrid('getCol', 'price', false, 'sum');
+                                            printGrid.jqGrid("footerData", "set", { LineName: '@DEBS.Translate("grid.Total")', totalStudents: totalStudents, seats: seats, price: price });
+                                        }
+                                    });
+                                    printWindow.document.clear();
+                                    printWindow.document.write('<html><head><title>@DEBS.Translate("Line.GridCaption")</title>');
+                                    //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
+                                    printWindow.document.write('</head><body >');
+                                    printWindow.document.write('<div class="page">');
+                                    printWindow.document.write('<div class="subpage">');
+                                    printWindow.document.write($("#printLinesGrid").html());
+                                    printWindow.document.write('</div>');
+                                    printWindow.document.write('</div>');
+                                    printWindow.document.write('</body></html>');
+                                    printWindow.document.close();
+                                    printWindow.print();
+                                }
+                            }
+                        });
+
+                    }
+                }
+                )
+                .navButtonAdd(pagerID, {
+                    id: "toExcel",
+                    buttonicon: "ui-icon-disk",
+                    caption: "",
+                    title: "@DEBS.Translate("grid.ToExcel")",
+                    onClickButton: function() {
+                        var postData = grid.jqGrid('getGridParam', 'postData');
+                        var urlGetExcel = '/api' + "@Url.Action("GetExcel", "LinesApi")";
+                        var url = urlGetExcel + "?" + $.param(postData);
+                        window.location.href = url;
+                    }
+                }
+                )
+                .filterToolbar({
+                    stringResult: true,
+                    enableClear: false
+                }
+                );
+
+            gridExtend.init();
+
+            function timecheck(value, colname) {
+                if (value) {
+                    var pattern = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
+                    var regCheck = new RegExp(pattern);
+                    if (!regCheck.test(value)) {
+                        return [false, "@DEBS.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
+                    }
+                }
+                return [true, ""];
+            }
+
+        });
+    </script>
+}

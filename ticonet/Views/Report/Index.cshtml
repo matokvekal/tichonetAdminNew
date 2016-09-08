@@ -1,0 +1,367 @@
+﻿@using System.Web.Optimization
+@using Business_Logic.Enums
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
+
+<div style="display:inline-block; width: 80px; padding: 0; margin: 0 10px; height: 30px;">
+    <button id="btnGetExcel" title="@DEBS.Translate("Report.GetExcel")" onclick="GetReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
+</div>
+
+<div class="page-block" style="display:inline-block; width: 300px; margin: 0 10px;">
+    <div class="clearfix">
+        <div class="float-right" style="margin-bottom: 5px">
+            @DEBS.Translate("Report.Month") :
+            <span id="pickMonthSliderVal"></span>
+            <a class="icon-btn" onclick="SliderMonth.ValUp()">
+                <i class="glyphicon glyphicon-backward"></i>
+            </a>
+            <a class="icon-btn" onclick="SliderMonth.ValDown()">
+                <i class="glyphicon glyphicon-forward"></i>
+            </a>
+        </div>
+    </div>
+    <div id="pickMonthSlider"></div>
+</div>
+
+<div class="page-block" style="display:inline-block; width: calc(100% - 450px); margin: 0 10px;">
+    <div class="clearfix">
+        <div class="float-right" style="margin-bottom: 5px">
+            @DEBS.Translate("Report.Year"):
+            <span id="pickYearSliderVal"></span>
+            <a class="icon-btn" onclick="SliderYear.ValUp()">
+                <i class="glyphicon glyphicon-backward"></i>
+            </a>
+            <a class="icon-btn" onclick="SliderYear.ValDown()">
+                <i class="glyphicon glyphicon-forward"></i>
+            </a>
+        </div>
+    </div>
+    <div id="pickYearSlider"></div>
+</div>
+
+<div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 200px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
+    <div style="width: calc(100% - 20px); margin-right: 20px">
+        <div id="reportGridContainer">
+        </div>
+    </div>
+</div>
+<hr style="margin:0; padding:5px;" />
+<table id="summaryReportGrid"></table>
+
+
+@section styles{
+    @Styles.Render("~/bundles/cssReport")
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqGridExtend")
+    @Scripts.Render("~/bundles/JquerySimpleUI")
+
+<script>
+    function GetReportExcell () {
+        var postData = {
+            startDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()-1) ).toUTCString(),
+            endDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()) ).toUTCString(),
+            summaryYear: SliderYear.GetCurrentVal(),
+        }
+        var urlGetExcel = '/api' + '@Url.Action("GetReportXL", "ReportApi")' + "?" + $.param(postData)
+        window.location.href = urlGetExcel
+    }
+
+    var SliderYear
+    var SliderMonth
+
+    var weekdays = new Array(7);
+    weekdays[0] = "@DEBS.Translate("Line.Sun")"
+    weekdays[1] = "@DEBS.Translate("Line.Mon")"
+    weekdays[2] = "@DEBS.Translate("Line.Tue")"
+    weekdays[3] = "@DEBS.Translate("Line.Wed")"
+    weekdays[4] = "@DEBS.Translate("Line.Thu")"
+    weekdays[5] = "@DEBS.Translate("Line.Fri")"
+    weekdays[6] = "@DEBS.Translate("Line.Sut")"
+
+    var MonthNames = []
+    MonthNames[0] = '@DEBS.Translate("Month.JAN")'
+    MonthNames[1] = '@DEBS.Translate("Month.FEB")'
+    MonthNames[2] = '@DEBS.Translate("Month.MAR")'
+    MonthNames[3] = '@DEBS.Translate("Month.APR")'
+    MonthNames[4] = '@DEBS.Translate("Month.MAJ")'
+    MonthNames[5] = '@DEBS.Translate("Month.JUN")'
+    MonthNames[6] = '@DEBS.Translate("Month.JUL")'
+    MonthNames[7] = '@DEBS.Translate("Month.AUG")'
+    MonthNames[8] = '@DEBS.Translate("Month.SEN")'
+    MonthNames[9] = '@DEBS.Translate("Month.OCT")'
+    MonthNames[10] = '@DEBS.Translate("Month.NOV")'
+    MonthNames[11] = '@DEBS.Translate("Month.DEC")'
+
+    $(function () {
+        function UpdateAllGrids () {
+            UpdateReportGrid("reportGridContainer","reportGrid")
+            summaryGridCont.trigger('reloadGrid');
+        }
+
+        //SLIDERS ------------------------------------
+
+        var NowDate = new Date();
+        var NowYear = NowDate.getFullYear()
+        var NowMonth = NowDate.getMonth()+1
+
+        SliderYear = new $SimpleSlider($,"pickYearSlider","pickYearSliderVal",NowYear,NowYear+50,NowYear-50,UpdateAllGrids,
+            {
+                inverted: true
+            })
+        SliderMonth = new $SimpleSlider($,"pickMonthSlider","pickMonthSliderVal",NowMonth,12,1,UpdateAllGrids,
+            {
+                inverted: true,
+                valShowerFunc: function(v){return MonthNames[v-1]}
+            })
+
+        //CUSTOM FORMATTER
+        function ActiveDayFormatter (cellvalue, options, rowObject){
+            if (typeof cellvalue === 'number')
+                return cellvalue
+            let markup = cellvalue !== 'inactive' ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i><br/> '+cellvalue
+                    : '<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858; top:8px"></i>'
+            markup = '<div style="min-height:37px">'+markup+'</div>'
+            return markup
+        }
+
+        //REPORT GRID ------------------------------------------------------------
+
+        UpdateReportGrid("reportGridContainer","reportGrid")
+
+        function UpdateReportGrid (gridContainerID, gridNewID) {
+            //clear old
+            $('#'+gridNewID).jqGrid("clearGridData");
+            $('#'+gridNewID).remove();
+            $('#'+gridContainerID).empty();
+
+            //create new
+            var gridholder = document.createElement('table');
+            gridholder.id = gridNewID;
+            $('#'+gridContainerID).append(gridholder);
+            var pagerholder = document.createElement('div');
+            pagerholder.id = gridNewID + "Pager"
+            $('#'+gridContainerID).append(pagerholder);
+
+            gridholder = $('#'+gridNewID)
+
+            var localData
+            var colNames = []
+            var colModel = []
+
+            function parseDates (datearr){
+                var output = []
+                for (i = 0; i < datearr.length; i++)
+                    output.push( new Date(Date.parse(datearr[i])) )
+                return output;
+            }
+
+            function shortenDateString (date){
+                return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()
+            }
+
+            function UpdateColModels (datarows){
+                //days = datarows[0].DayDate
+                var days = parseDates(datarows[0].DayDate)
+                colNames.push("@DEBS.Translate("Line.Id")");
+                colNames.push("@DEBS.Translate("Line.LineNumber")");
+                colNames.push("@DEBS.Translate("Line.LineName")");
+                colModel.push({ name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false });
+                colModel.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 70, editable: false });
+                colModel.push({ name: 'LineName', index: 'LineName', sorttype: "text", width: 150, editable: false });
+                days.forEach(function(day,ind,arr){
+                    colNames.push( shortenDateString(day)  + ' <br />' + weekdays[day.getDay()]);
+                    colModel.push({
+                        name: "day"+ind,
+                        index: "day"+ind,
+                        sorttype: "text",
+                        width: 80,
+                        editable: false,
+                        align: 'center',
+                        formatter: ActiveDayFormatter,
+                        search: false
+                    })
+                })
+            }
+
+            $.ajax({
+                //type: "GET",
+                url: "/api" + "@Url.Action("GetAllLinesPeriodStatistic", "ReportApi")",
+                data: {
+                    startDate: (new Date(SliderYear.GetCurrentVal(),SliderMonth.GetCurrentVal()-1) ).toUTCString(),
+                    endDate: (new Date(SliderYear.GetCurrentVal(),SliderMonth.GetCurrentVal()) ).toUTCString(),
+                },
+                dataType: "json",
+                success: function(result){
+                    localData = result.Data.rows
+                    localData.forEach(function(ele,ind,arr){
+                        AppendArrAsFields(ele,ele.DayScheduleData,'day')
+                    })
+                    localData.footer = ArrayToObject( result.Data.footer,'day',function(obj) {return obj.totalPrice} )
+                    localData.footer.LineNumber = '@DEBS.Translate("Report.totalPrice")'
+                    UpdateColModels(localData)
+                    buildJqGrid()
+                },
+                error: function(x, e){
+                    alert("Error when fetching data from server. " + x.readyState + " "+ x.status +" "+ e.msg);
+                }
+            })
+
+            function buildJqGrid () {
+                gridholder.jqGrid({
+                    datatype: 'local',
+                    data: localData,
+                    caption: '@DEBS.Translate("Report.GridCaption")',
+                    height: "100%",
+                    regional: "il",
+                    hidegrid: false,
+                    multiselect: false,
+                    rowNum: 20,
+                    rowList: [10,  20, 30, 40, 50],
+                    viewrecords: true,
+                    ignoreCase: true,
+                    sortname: 'LineNumber',
+                    sortorder: "asc",
+                    viewrecords: true,
+                    loadonce: false,
+                    colNames: colNames,
+                    colModel: colModel,
+                    subGrid: true, // set the subGrid property to true to show expand buttons for each row
+                    subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
+                    pager: "#" + pagerholder.id,
+                    footerrow: true,
+                })
+                .navGrid("#" + pagerholder.id, {
+                    edit: false,
+                    add: false,
+                    del: false,
+                    refresh: false,
+                    search: false,
+                    view: false,
+                })
+                .navButtonAdd("#" + pagerholder.id, {
+                    id: "toExcel",
+                    buttonicon: "ui-icon-disk",
+                    caption: "",
+                    title: "@DEBS.Translate("grid.ToExcel")",
+                    onClickButton: function () {
+                        GetReportExcell();
+                        @*var postData = grid.jqGrid('getGridParam', 'postData');
+                        var urlGetExcel = '/api' + "@Url.Action("GetExcel", "ReportApi")";
+                        var url = urlGetExcel + "?" + $.param(postData);
+                        window.location.href = url;*@
+                    }
+                });
+                gridholder.footerData('set', localData.footer );
+
+                function ConvertLineDataToRows(lineData) {
+                    var rows = [];
+                    PushPropertyLikeObj(rows, lineData, 'LineName', '@DEBS.Translate("Line.LineName")');
+                    PushPropertyLikeObj(rows, lineData, 'Direction', '@DEBS.Translate("Line.Direction")', DirectionToString);
+                    PushPropertyLikeObj(rows, lineData, 'totalStudents', '@DEBS.Translate("Line.totalStudents")');
+                    PushPropertyLikeObj(rows, lineData, 'BusCompanyName', '@DEBS.Translate("BusCompany.Name")');
+                    PushPropertyLikeObj(rows, lineData, 'price', '@DEBS.Translate("Bus.price")');
+                    PushPropertyLikeObj(rows, lineData, 'seats', '@DEBS.Translate("Bus.seats")');
+                    return rows;
+                }
+
+                function showChildGrid(parentRowID, parentRowKey) {
+                    var lineData = localData.find(function (e, i, a) { return e.Id == parentRowKey });
+                    var lineDataRows = ConvertLineDataToRows(lineData);
+                    var childGridID = parentRowID + "_table";
+                    var childGridPagerID = parentRowID + "_pager";
+                    var childGridURL = parentRowKey + ".json";
+                    // add a table and pager HTML elements to the parent grid row - we will render the child grid here
+                    $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+                    var subgrid = $("#" + childGridID);
+                    subgrid.jqGrid({
+                        datatype: 'local',
+                        data: lineDataRows,
+                        colNames:["",""],
+                        colModel: [
+                            { name: 'Name', index: 'Name', width: 110, editable: false },
+                            { name: 'Val', index: 'Val', width: 110, editable: false },
+                        ],
+                        loadonce: false,
+                        height: '100%',
+                        hidegrid: false,
+                        loadComplete: function (data) {
+                        },
+                    });
+                    subgrid.closest("div.ui-jqgrid-view")
+                    .children("div.ui-jqgrid-hdiv")
+                    .hide();
+                }
+            }
+        }
+
+        //SUMMARY REPORT GRID ------------------------------------------------------------
+
+        function MakeMonthNamesArr () {
+            var arr = [];
+            arr.push('@DEBS.Translate("Report.Month")');
+            for (ind = 1; ind < 13; ind++ ) {
+                arr.push(ind);
+            }
+            return arr;
+        }
+
+        function MakeMonthModels () {
+            var arr = [];
+            arr.push({ name: 'name', index: 'name', width: 120, editable: false, align: 'center' });
+            for (ind = 1; ind < 13; ind++) {
+                arr.push({ name: 'month'+ind, index: 'month'+ind, width: 62, editable: false, align: 'center' });
+            }
+            return arr;
+        }
+
+        const txt_LinesCount = '@DEBS.Translate("Report.linesCount")'
+        const txt_totalStudents = '@DEBS.Translate("Report.totalStudents")'
+        const txt_totalPrice = '@DEBS.Translate("Report.totalPrice")'
+
+        var summaryGridCont = $("#summaryReportGrid");
+        summaryGridCont.jqGrid({
+            caption: '@DEBS.Translate("SummaryReport.GridCaption")',
+            url: '/api' + '@Url.Action("GetLinesTotalStatistic", "ReportApi")',
+            datatype: "json",
+            serializeGridData: function(postdata){
+                return {year: SliderYear.GetCurrentVal()};
+            },
+            autowidth: true,
+            regional: "il",
+            hidegrid: false,
+            multiselect: false,
+            viewrecords: true,
+            loadonce: false,
+            hidegrid: false,
+            colNames: MakeMonthNamesArr(),
+            colModel: MakeMonthModels(),
+            height: "100%",
+            rowNum: -1,
+            jsonReader: {
+                repeatitems: false,
+                root: function (obj){
+                    var result = [{name:txt_LinesCount},{name:txt_totalStudents},{name:txt_totalPrice}];
+                    for (ind = 1; ind<13; ind ++) {
+                        result[0]['month'+ind]=obj.Data[ind-1]["linesCount"];
+                        result[1]['month'+ind]=obj.Data[ind-1]["totalStudents"];
+                        result[2]['month'+ind]=obj.Data[ind-1]["totalPrice"];
+                    }
+                    return result;
+                }
+            }
+        })
+
+        //UTILITY---------
+
+        function DirectionToString(dirValue) {
+            return dirValue === @((int)LineDirection.Bouth) ?
+                '@DEBS.Translate("General.Bouth")' :
+                dirValue == @((int)LineDirection.To) ?
+                '@DEBS.Translate("General.To")' :
+                '@DEBS.Translate("General.From")'
+        }
+    })
+</script>
+}
