@@ -9,6 +9,12 @@ using System.Transactions;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
+
+    public class BatchSendingTaskSettings {
+        public int MailsLimit = -1;
+        public int SmsLimit = -1;
+    }
+
     public static class TASK_PROTOTYPE {
 
         public static List<Message> GetDemoMessages (MessagesModuleLogic logic, IMessageTemplate tmpl, ISqlLogic sqlLogic, bool isSms, int MaxCount = 0) {
@@ -54,15 +60,17 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             }
         }
 
-        public static void RunScheduledBatchSending(MessagesModuleLogic Logic) {
-            using (var transaction = new TransactionScope())
-            {
+        static BatchSendingTaskSettings DefaultsBatchSendingTaskSettings = new BatchSendingTaskSettings();
+
+        public static void RunScheduledBatchSending(MessagesModuleLogic Logic, BatchSendingTaskSettings Settings = null) {
+            Settings = Settings ?? DefaultsBatchSendingTaskSettings;
+            using (var transaction = new TransactionScope()) {
                 bool success = true;
-                //TODO TRY-CATCH and complete transaction?
-                using (var manager = BatchSendingManager.NewInstance(Logic)) {
+                //TODO TOTAL REFACTOR ASAP!!!!!!!!!!!!!!!!!!!!!!!
+                //TRY-CATCH and complete transaction?
+                using (var manager = BatchSendingManager.NewInstance(Settings,Logic)) {
                     var allPendingMails = manager.GetPendingEmails();
                     var allPendingSms = manager.GetPendingSms();
-                    int allPendingMailsCount = allPendingMails.Count();
 
                     var batches = allPendingMails
                         .Select(x => x.tblMessageBatch)
@@ -71,40 +79,23 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                             .Select(x => x.tblMessageBatch)
                             .Distinct())
                         .ToArray();
-                    var emailProviders = manager.GetActiveEmailProviders().GetEnumerator();
 
                     //EMAIL
+                    var emailProviders = manager.GetActiveEmailProviders().GetEnumerator();
                     var Emailer = new EmailSender(manager);
-                    bool continueCycle = emailProviders.MoveNext();
-                    IEnumerable<IEmailMessage> pendingMailsPortion = null;
-                    int Counter = 0;
-                    while (continueCycle) {
-                        var provider = emailProviders.Current;
-                        pendingMailsPortion = manager.MakeCountAcceptableByProvider(allPendingMails, provider);
-                        int getted = pendingMailsPortion == null ? 0 : pendingMailsPortion.Count();
-                        if (getted > 0) {
-                            DateTime start = DateTime.Now;
-                            Emailer.SendBatch(pendingMailsPortion, provider);
-                            manager.StoreSendProviderWorkHistory(provider, start, DateTime.Now.AddMilliseconds(1), getted);
-                            //UPDATE DB AFTER StoreSendProviderWorkHistory somehow:
-                            manager.Logic.DeleteLazy(pendingMailsPortion.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue));
-
-                            Counter += getted;
-                        }
-                        if (allPendingMailsCount == Counter)
-                            break;
-                        continueCycle = emailProviders.MoveNext();
-                    }
+                    SendCycle(manager, allPendingMails, emailProviders, Emailer);
                     //SMS
+                    var smsProviders = manager.GetActiveSmsProviders().GetEnumerator();
                     var Smser = new SmsSender(manager);
+                    SendCycle(manager, allPendingSms, smsProviders, Smser);
 
-
-                    //CHECK IF BATCHES FINISHED
-                    //ADD ERRORS TO BATCH
                     foreach (var batch in batches) {
-                        if (!batch.tblMessages.Where(x => (x.tblPendingMessagesQueue != null)  && (!x.tblPendingMessagesQueue.Deleted)).Any()) {
+                        //check if batch finished
+                        if (!batch.tblMessages.Where(x => (x.tblPendingMessagesQueue != null) && (!x.tblPendingMessagesQueue.Deleted)).Any()) {
                             batch.FinishedOn = DateTime.Now;
                         }
+                        //TODO THIS CHECK IS NOT RIGHT DECISION
+                        //add errors to batch if there are some
                         if (batch.tblMessages.Where(x => x.ErrorLog != null).Any()) {
                             (batch as IErrorLoged).AddError("Some errors have arisen at sending stage at " + DateTime.Now.ToShortDateString());
                         }
@@ -115,6 +106,34 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 }
                 Logic.Dispose();
                 if(success) transaction.Complete();
+            }
+        }
+
+        static void SendCycle <TSenderProvider,TMessage>
+            (BatchSendingManager manager, IQueryable<TMessage> allPendingMsgs, IEnumerator<TSenderProvider> providers, IMessageSender<TSenderProvider, TMessage> MessageSender)
+                    where TSenderProvider : ISendServiceProvider
+                    where TMessage : IMessage 
+        {
+            int allPendingCount = allPendingMsgs.Count();
+            if (allPendingCount == 0)
+                return;
+            IEnumerable<TMessage> pendingChunk = null;
+            int Counter = 0;
+            while (providers.MoveNext()) {
+                var provider = providers.Current;
+                pendingChunk = manager.MakeCountAcceptableByProvider(allPendingMsgs, provider);
+                int getted = pendingChunk == null ? 0 : pendingChunk.Count();
+                if (getted > 0) {
+                    DateTime start = DateTime.Now;
+                    MessageSender.SendBatch(pendingChunk, provider);
+                    manager.StoreSendProviderWorkHistory(provider, start, DateTime.Now.AddMilliseconds(1), getted);
+                    //UPDATE DB AFTER StoreSendProviderWorkHistory somehow:
+                    manager.Logic.DeleteLazy(pendingChunk.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue));
+
+                    Counter += getted;
+                }
+                if (allPendingCount == Counter)
+                    break;
             }
         }
     }

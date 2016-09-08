@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace Business_Logic.MessagesModule.Mechanisms {
     public class BatchSendingManager : IDisposable {
 
-        public static BatchSendingManager NewInstance (MessagesModuleLogic Logic = null) {
-            return new BatchSendingManager(Logic);
+        public static BatchSendingManager NewInstance (BatchSendingTaskSettings Settings, MessagesModuleLogic Logic = null) {
+            return new BatchSendingManager(Settings, Logic);
         }
 
         public readonly MessagesModuleLogic Logic;
@@ -55,9 +55,10 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             provider.RestrictionDataLog = log;
         }
 
-        private BatchSendingManager (MessagesModuleLogic Logic = null) {
+        public BatchSendingManager(BatchSendingTaskSettings settings, MessagesModuleLogic Logic = null) {
             AutoDisposeLogic = Logic == null;
             this.Logic = Logic ?? new MessagesModuleLogic();
+            Settings = settings;
         }
 
         public IQueryable<IEmailServiceProvider> GetActiveEmailProviders () {
@@ -65,19 +66,32 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 .Where(x => x.IsActive);
         }
 
+        public IQueryable<ISmsServiceProvider> GetActiveSmsProviders() {
+            return Logic.GetFilteredQueryable<tblSmsSenderDataProvider>()
+                .Where(x => x.IsActive);
+        }
+
         public IQueryable<tblMessage> GetPendingEmails () {
-            return Logic.GetFilteredQueryable<tblPendingMessagesQueue>()
+            var q = Logic.GetFilteredQueryable<tblPendingMessagesQueue>()
                 .OrderByDescending(x => x.Priority)
                 .Select(x => x.tblMessage)
                 .Where(x => !x.IsSms && !x.tblPendingMessagesQueue.Deleted);
+            if (Settings.MailsLimit > -1)
+                q = q.Take(Settings.MailsLimit);
+            return q;
         }
 
         public IQueryable<tblMessage> GetPendingSms() {
-            return Logic.GetFilteredQueryable<tblPendingMessagesQueue>()
+            var q = Logic.GetFilteredQueryable<tblPendingMessagesQueue>()
                 .OrderByDescending(x => x.Priority)
                 .Select(x => x.tblMessage)
                 .Where(x => x.IsSms && !x.tblPendingMessagesQueue.Deleted);
+            if (Settings.SmsLimit > -1)
+                q = q.Take(Settings.SmsLimit);
+            return q;
         }
+
+        BatchSendingTaskSettings Settings;
 
         #region IDisposable Implementation
         bool disposedValue = false; // To detect redundant calls
@@ -95,6 +109,9 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             }
         }
         public bool IsDisposed { get { return disposedValue; } }
+
+
+
         public void Dispose() {
             Dispose(true);
         }

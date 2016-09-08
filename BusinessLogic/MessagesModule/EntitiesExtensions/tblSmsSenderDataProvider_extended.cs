@@ -1,40 +1,20 @@
-﻿using System;
+﻿using Business_Logic.MessagesModule.EntitiesExtensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic.MessagesModule.DataObjects;
-using Business_Logic.MessagesModule.EntitiesExtensions;
 using Newtonsoft.Json;
 
 namespace Business_Logic.MessagesModule {
-    public partial class tblEmailSenderDataProvider : IMessagesModuleEntity, IEmailServiceProvider {
-        
-        #region IEmailServiceProvider realization
+    public partial class tblSmsSenderDataProvider : IMessagesModuleEntity, ISmsServiceProvider {
 
-        MailAddress _FromEmailAddress;
-        MailAddress IEmailServiceProvider.FromEmailAddress {
-            get {
-                if (_FromEmailAddress == null)
-                    _FromEmailAddress = new MailAddress(FromEmailAddress, FromEmailDisplayName);
-                return _FromEmailAddress;
-            }
+        #region ISmsServiceProvider realization
+        int ISmsServiceProvider.MessageInterval {get {return MessageInterval;}
         }
 
-        NetworkCredential _NetworkCredentials;
-        NetworkCredential IEmailServiceProvider.NetworkCredentials {
-            get {
-                if(_NetworkCredentials == null)
-                    _NetworkCredentials = new NetworkCredential(FromEmailAddress, FromEmailPassword);
-                return _NetworkCredentials;
-            }
-        }
-
-        bool IEmailServiceProvider.EnableSsl { get { return EnableSsl; } }
-        string IEmailServiceProvider.SmtpHostName { get { return SmtpHostName; } }
-        int IEmailServiceProvider.SmtpPort { get { return SmtpPort; } }
+        string ISmsServiceProvider.Password {get {return Password;}}
 
         SendProviderRestrictionData _RestrictionData;
         SendProviderRestrictionData ISendServiceProvider.RestrictionData {
@@ -67,6 +47,11 @@ namespace Business_Logic.MessagesModule {
             }
         }
 
+        string ISmsServiceProvider.SenderName { get { return FromDisplayName; } }
+
+        string ISmsServiceProvider.SenderNumber { get { return FromPhoneNumber; } }
+
+        string ISmsServiceProvider.UserName { get { return Username; } }
         #endregion
     }
 }

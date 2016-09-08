@@ -8,7 +8,15 @@ using System;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
-    public class EmailSender : BatchSendingComponent {
+    public interface IMessageSender <TSendServiceProvider,TMessage>
+        where TSendServiceProvider : ISendServiceProvider
+        where TMessage: IMessage {
+
+        void SendBatch(IEnumerable<TMessage> messages, TSendServiceProvider provider);
+        void SendSingle(TMessage message, TSendServiceProvider provider); 
+    }
+
+    public class EmailSender : BatchSendingComponent, IMessageSender<IEmailServiceProvider,IEmailMessage> {
 
         public EmailSender(BatchSendingManager manager) : base(manager) {
         }

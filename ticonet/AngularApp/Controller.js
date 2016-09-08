@@ -201,6 +201,7 @@ var AngularApp;
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
+                    //if (response.data.items) {
                     response.data.items.forEach(function (e1) {
                         var index = -1;
                         for (var i = 0; i < container.length; i++) {
@@ -214,6 +215,7 @@ var AngularApp;
                         else if (pushnew)
                             container.push(e1);
                     });
+                    //}
                     RunCallbackOrHandler(successCB, response);
                 };
                 _this.request(holdTillResponse, data);

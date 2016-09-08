@@ -131,6 +131,7 @@
     <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientCard_extended.cs" />
     <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientFilterTableName_extended.cs" />
     <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientFilter_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblSmsSenderDataProvider_extended.cs" />
     <Compile Include="MessagesModule\EntitiesExtensions\tblTemplate_extended.cs" />
     <Compile Include="MessagesModule\EntitiesExtensions\tblWildcard_extended.cs" />
     <Compile Include="MessagesModule\InnerLibs\Text2Graph.cs" />
@@ -190,6 +191,9 @@
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
     <Compile Include="MessagesModule\tblRecepientFilterTableName.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesModule\tblSmsSenderDataProvider.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
     <Compile Include="MessagesModule\tblTemplate.cs">

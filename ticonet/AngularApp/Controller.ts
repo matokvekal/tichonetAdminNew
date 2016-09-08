@@ -246,19 +246,21 @@
             let successCB = data.onSucces
             data = CloneRequestArgs(data)
             data.onSucces = (response) => {
-                response.data.items.forEach((e1) => {
-                    let index = -1
-                    for (let i = 0; i < container.length; i++) {
-                        if (equalityPredicate(e1, container[i])) {
-                            index = i
-                            break
+                //if (response.data.items) {
+                    response.data.items.forEach((e1) => {
+                        let index = -1
+                        for (let i = 0; i < container.length; i++) {
+                            if (equalityPredicate(e1, container[i])) {
+                                index = i
+                                break
+                            }
                         }
-                    }
-                    if (index != -1)
-                        container[index] = e1
-                    else if (pushnew)
-                        container.push(e1)
-                })
+                        if (index != -1)
+                            container[index] = e1
+                        else if (pushnew)
+                            container.push(e1)
+                    })
+                //}
                 RunCallbackOrHandler(successCB, response)
             }
             this.request(holdTillResponse, data)

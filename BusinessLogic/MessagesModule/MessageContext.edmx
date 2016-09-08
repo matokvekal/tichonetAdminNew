@@ -119,6 +119,21 @@
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ReferncedTableName" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="tblSmsSenderDataProvider">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="FromDisplayName" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="FromPhoneNumber" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="MessageInterval" Type="int" Nullable="false" />
+          <Property Name="SendProviderRestrictionDataJSON" Type="nvarchar(max)" />
+          <Property Name="SendProviderRestrictionDataLogJSON" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="tblTemplate">
           <Key>
             <PropertyRef Name="Id" />
@@ -142,7 +157,7 @@
           <Property Name="Code" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
-        <Association Name="FK__tblPendingMe__Id__61316BF4">
+        <Association Name="FK__tblPendingMe__Id__1B9317B3">
           <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="1" />
           <End Role="tblPendingMessagesQueue" Type="Self.tblPendingMessagesQueue" Multiplicity="0..1" />
           <ReferentialConstraint>
@@ -165,9 +180,10 @@
           <EntitySet Name="tblRecepientCard" EntityType="Self.tblRecepientCard" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilter" EntityType="Self.tblRecepientFilter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSmsSenderDataProvider" EntityType="Self.tblSmsSenderDataProvider" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTemplate" EntityType="Self.tblTemplate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblWildcard" EntityType="Self.tblWildcard" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__tblPendingMe__Id__61316BF4" Association="Self.FK__tblPendingMe__Id__61316BF4">
+          <AssociationSet Name="FK__tblPendingMe__Id__1B9317B3" Association="Self.FK__tblPendingMe__Id__1B9317B3">
             <End Role="tblMessage" EntitySet="tblMessage" />
             <End Role="tblPendingMessagesQueue" EntitySet="tblPendingMessagesQueue" />
           </AssociationSet>
@@ -225,6 +241,7 @@
             <End Role="tblMessage" EntitySet="tblMessages" />
             <End Role="tblPendingMessagesQueue" EntitySet="tblPendingMessagesQueues" />
           </AssociationSet>
+          <EntitySet Name="tblSmsSenderDataProviders" EntityType="Messages.tblSmsSenderDataProvider" />
         </EntityContainer>
         <EntityType Name="tblFilter">
           <Key>
@@ -489,6 +506,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblSmsSenderDataProvider">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="FromDisplayName" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="FromPhoneNumber" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MessageInterval" Type="Int32" Nullable="false" />
+          <Property Name="SendProviderRestrictionDataJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SendProviderRestrictionDataLogJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -640,6 +672,22 @@
               <MappingFragment StoreEntitySet="tblPendingMessagesQueue">
                 <ScalarProperty Name="Deleted" ColumnName="Deleted" />
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSmsSenderDataProviders">
+            <EntityTypeMapping TypeName="Messages.tblSmsSenderDataProvider">
+              <MappingFragment StoreEntitySet="tblSmsSenderDataProvider">
+                <ScalarProperty Name="SendProviderRestrictionDataLogJSON" ColumnName="SendProviderRestrictionDataLogJSON" />
+                <ScalarProperty Name="SendProviderRestrictionDataJSON" ColumnName="SendProviderRestrictionDataJSON" />
+                <ScalarProperty Name="MessageInterval" ColumnName="MessageInterval" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="FromPhoneNumber" ColumnName="FromPhoneNumber" />
+                <ScalarProperty Name="FromDisplayName" ColumnName="FromDisplayName" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

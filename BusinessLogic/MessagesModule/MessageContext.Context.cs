@@ -37,5 +37,6 @@ namespace Business_Logic.MessagesModule
         public virtual DbSet<tblBatchCreationManagerData> tblBatchCreationManagerDatas { get; set; }
         public virtual DbSet<tblEmailSenderDataProvider> tblEmailSenderDataProviders { get; set; }
         public virtual DbSet<tblPendingMessagesQueue> tblPendingMessagesQueues { get; set; }
+        public virtual DbSet<tblSmsSenderDataProvider> tblSmsSenderDataProviders { get; set; }
     }
 }

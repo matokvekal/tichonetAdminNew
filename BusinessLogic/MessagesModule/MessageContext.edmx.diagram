@@ -23,9 +23,10 @@
         <AssociationConnector Association="Messages.tblMessageBatchtblMessageSchedule" />
         <AssociationConnector Association="Messages.tblMessageBatchtblMessage" />
         <EntityTypeShape EntityType="Messages.tblBatchCreationManagerData" Width="1.5" PointX="0.75" PointY="8.75" />
-        <EntityTypeShape EntityType="Messages.tblEmailSenderDataProvider" Width="1.5" PointX="2.75" PointY="8.75" />
+        <EntityTypeShape EntityType="Messages.tblEmailSenderDataProvider" Width="1.5" PointX="3.625" PointY="8.75" />
         <EntityTypeShape EntityType="Messages.tblPendingMessagesQueue" Width="1.5" PointX="11.125" PointY="8.625" />
         <AssociationConnector Association="Messages.FK__tblPendingMe__Id__7073AF84" />
+        <EntityTypeShape EntityType="Messages.tblSmsSenderDataProvider" Width="1.5" PointX="5.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

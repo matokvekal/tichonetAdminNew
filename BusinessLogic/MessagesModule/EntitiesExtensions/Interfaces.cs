@@ -14,8 +14,12 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
     }
 
     public interface IMessage: IErrorLoged {
-        
         DateTime? SendDate { get; set; }
+    }
+
+    public interface ISendServiceProvider {
+        SendProviderRestrictionData RestrictionData { get; }
+        SendProviderRestrictionDataLog RestrictionDataLog { get; set; }
     }
 
     public interface IEmailMessage : IMessage {
@@ -26,10 +30,6 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
         bool IsBodyHtml { get; }
     }
 
-    public interface ISendServiceProvider {
-        SendProviderRestrictionData RestrictionData { get; }
-        SendProviderRestrictionDataLog RestrictionDataLog { get; set; }
-    }
     public interface IEmailServiceProvider : ISendServiceProvider {
         string SmtpHostName { get; }
         int SmtpPort { get; }
@@ -37,6 +37,19 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
 
         MailAddress FromEmailAddress { get; }
         NetworkCredential NetworkCredentials { get;}
+    }
+
+    public interface ISmsMessage : IMessage {
+        string PhoneNumber { get; }
+        string Text { get; }
+    }
+
+    public interface ISmsServiceProvider : ISendServiceProvider {
+        int MessageInterval { get; }
+        string UserName { get; }
+        string Password { get; }
+        string SenderName { get; }
+        string SenderNumber { get; }
     }
 
     public interface IMessagesModuleEntity {
@@ -59,5 +72,6 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
         IEnumerable<FilterValueContainer> FilterValueContainers { get; }
         IQueryable<tblWildcard> Wildcards { get; }
         IQueryable<tblRecepientCard> Recepients { get; }
+        bool IsSms { get; }
     }
 }

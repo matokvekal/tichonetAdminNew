@@ -51,7 +51,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                     Condition.Append(orNode);
                 }
             }
-
+            
             //Build list of needed colomns
             var colomns = wildcards.Select(x => x.Key)
                 .Concat(recepients.Select(x => x.EmailKey))
@@ -62,11 +62,13 @@ namespace Business_Logic.MessagesModule.Mechanisms {
 
             var wildcardsSummed = wildcards.SelectMany(x => x.ToKeyValues());
 
+            bool IsSms = templ.IsSms;
             foreach (var rec in recepients) {
                 var prodData = new MessageProductionData();
+                var GroupKey = IsSms ? rec.PhoneKey : rec.EmailKey;
                 prodData.TextProductionData = sqlData
-                    .Where(x => !string.IsNullOrWhiteSpace(x[rec.EmailKey].ToString()))
-                    .GroupBy(x => x[rec.EmailKey].ToString());
+                    .Where(x => !string.IsNullOrWhiteSpace(x[GroupKey].ToString()))
+                    .GroupBy(x => x[GroupKey].ToString());
                 prodData.wildCards = wildcardsSummed.Concat(rec.ToKeyValues());
                 output.Add(prodData);
             }

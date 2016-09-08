@@ -13,7 +13,7 @@ namespace ticonet.Scheduler.Tasks {
         public override void Execute() {
             lock (_lock) {
                 using (var logic = new MessagesModuleLogic(new MessageContext())) {
-                    TASK_PROTOTYPE.RunScheduledBatchSending(logic);
+                    TASK_PROTOTYPE.RunScheduledBatchSending(logic, new BatchSendingTaskSettings {SmsLimit = 20, MailsLimit = 20 });
                 }
             }
         }
