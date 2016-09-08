@@ -1,4 +1,6 @@
-﻿<div ng-controller="MFiltersController"
+﻿@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
+<div ng-controller="MFiltersController"
      data-ng-init="init({
         urls: {
         getcolomns: '@Url.Action("GetColumns","RFilterTable")',
@@ -45,7 +47,7 @@
                         <!-- Editing BaseTable -->
                         <div class="txt-c-gr">
                             <span class="txt-c-grmore">
-                                Based on Table:
+                                @DEBS.Translate("MessageModule.Based on Table:")
                             </span>
                             <span>
                                 {{va.curmetafilterBaseTableName()}}
@@ -76,7 +78,7 @@
                             <div ng-if="va.showTableChoose&&va.curmetafilter.BaseTableId!==-1">
                                 <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SetCurTableFromCurMFilt()">
                                     <i class="glyphicon glyphicon-ban-circle"> </i>
-                                    Cancel
+                                    @DEBS.Translate("MessageModule.Cancel")
                                 </span>
                             </div>
                         </div>
@@ -90,15 +92,15 @@
                             <div class="controlbox hover-closer clickable"
                                  ng-click="va.SHOW_RCARDS=!va.SHOW_RCARDS"
                                  droppable id="{{va.reccardCreator_ID}}" drop="NewRecardDrop">
-                                Recepient cards
+                                @DEBS.Translate("MessageModule.Recepient cards")
                                 <div class="txt-s-small">
-                                    (drop key here to create new, click to fold/unfold)
+                                    @DEBS.Translate("MessageModule.(drop key here to create new, click to fold / unfold)")
                                 </div>
                             </div>
 
                             <div ng-if="va.SHOW_RCARDS" class="foldable editor-container bounded-block-m">
                                 <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.reccards.length==0">
-                                    No Recepient cards. Drag Key from right list to create new.
+                                    @DEBS.Translate("MessageModule.No Recepient cards. Drag Key from right list to create new.")
                                 </div>
                                 <div ng-repeat="rc in va.curmetafilter.reccards" class="ngan-fade-mid">
                                     <div ng-if="!rc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
@@ -111,19 +113,19 @@
                                                ng-click="RemoveItem(rc)"></i>
                                         </div>
                                         <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropName,rc.Id)}}" drop="RecardDropKey">
-                                            Recipent Name Key:
+                                            @DEBS.Translate("MessageModule.Recipent Name Key:")
                                             <span class="txt-c-base">
                                                 {{rc.NameKey}}
                                             </span>
                                         </div>
                                         <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropEmail,rc.Id)}}" drop="RecardDropKey">
-                                            Email Key:
+                                            @DEBS.Translate("MessageModule.Email Key:")
                                             <span class="txt-c-base">
                                                 {{rc.EmailKey}}
                                             </span>
                                         </div>
                                         <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropPhone,rc.Id)}}" drop="RecardDropKey">
-                                            Phone Key:
+                                            @DEBS.Translate("MessageModule.Phone Key:")
                                             <span class="txt-c-base">
                                                 {{rc.PhoneKey}}
                                             </span>
@@ -135,10 +137,10 @@
                                             {{rc.Name}}
                                         </span>
                                         <span class="txt-c-grmore">
-                                            (deleted)
+                                            @DEBS.Translate("MessageModule.(deleted)")
                                         </span>
                                         <span ng-click="RestoreItem(rc)" class="txt-c-gr txt-anim hover-highlight clickable">
-                                            restore
+                                            @DEBS.Translate("MessageModule.restore")
                                         </span>
                                     </div>
                                     <!--Validation info, if invalid-->
@@ -156,14 +158,14 @@
                             <div class="controlbox hover-closer clickable"
                                  ng-click="va.SHOW_WCARDS=!va.SHOW_WCARDS"
                                  droppable id="{{va.wildcardCreator_ID}}" drop="NewWildcardDrop">
-                                Wildcards
+                                @DEBS.Translate("MessageModule.Wildcards")
                                 <div class="txt-s-small">
-                                    (drop key here to create new, click to fold/unfold)
+                                    @DEBS.Translate("MessageModule.(drop key here to create new, click to fold / unfold)")
                                 </div>
                             </div>
                             <div ng-if="va.SHOW_WCARDS" class="foldable editor-container bounded-block-m">
                                 <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.wildcards.length==0">
-                                    No Wildcards. Drag Key from right list to create new.
+                                    @DEBS.Translate("MessageModule.No Wildcards. Drag Key from right list to create new.")
                                 </div>
                                 <div ng-repeat="wc in va.curmetafilter.wildcards" class="ngan-fade-mid">
                                     <div ng-if="!wc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':wc.Invalid}">
@@ -177,7 +179,7 @@
                                         </div>
                                         <div>
                                             <span class="txt-c-grmore">
-                                                Code Preview:
+                                                @DEBS.Translate("MessageModule.Code Preview:")
                                             </span>
                                             <span class="txt-c-gr">
                                                 {{wc.Code}}
@@ -188,7 +190,7 @@
                                         </div>
                                         <div>
                                             <span class="txt-c-grmore">
-                                                Key:
+                                                @DEBS.Translate("MessageModule.Key:")
                                             </span>
                                             <span class="txt-c-gr">
                                                 {{wc.Key}}
@@ -201,10 +203,10 @@
                                             {{wc.Name}}
                                         </span>
                                         <span class="txt-c-grmore">
-                                            (deleted)
+                                            @DEBS.Translate("MessageModule.(deleted)")
                                         </span>
                                         <span ng-click="RestoreItem(wc)" class="txt-c-gr txt-anim hover-highlight clickable">
-                                            restore
+                                            @DEBS.Translate("MessageModule.restore")
                                         </span>
                                     </div>
                                     <!--Validation info, if invalid-->
@@ -220,14 +222,14 @@
                             <div class="controlbox hover-closer clickable"
                                  ng-click="va.SHOW_FILTS=!va.SHOW_FILTS"
                                  droppable id="{{va.filterCreator_ID}}" drop="NewFilterDrop">
-                                Filters
+                                @DEBS.Translate("MessageModule.Filters")
                                 <div class="txt-s-small">
-                                    (drop key here to create new, click to fold/unfold)
+                                    @DEBS.Translate("MessageModule.(drop key here to create new, click to fold / unfold)")
                                 </div>
                             </div>
                             <div ng-if="va.SHOW_FILTS" class="foldable editor-container bounded-block-m">
                                 <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.filters.length==0">
-                                    No Filters. Drag Key from right list to create new.
+                                    @DEBS.Translate("MessageModule.No Filters. Drag Key from right list to create new.")
                                 </div>
                                 <div class="filter-row ngan-fade-mid" ng-repeat="nfilt in va.curmetafilter.filters">
                                     <div class="item-row" ng-if="!nfilt.ng_ToDelete" ng-class="{'invalid':nfilt.Invalid}">
@@ -265,26 +267,26 @@
                                             </div>
                                             <!-- Filter add 'OR' to Expression -->
                                             <span style="padding-left:20px" class="txt-c-grmore txt-anim hover-highlight clickable"
-                                                  ng-click="AddFiltValue(nfilt)">add "or"</span>
+                                                  ng-click="AddFiltValue(nfilt)">@DEBS.Translate("MessageModule.add \"or\"")</span>
                                         </div>
 
 
                                         <!-- Templates-user can tune this filter if checked -->
                                         <div class="txt-c-gr">
                                             <input type="checkbox" class="checkbox" ng-model="nfilt.allowUserInput" />
-                                            Allow User Input
+                                            @DEBS.Translate("MessageModule.Allow User Input")
                                         </div>
                                         <div class="txt-c-gr" ng-if="nfilt.allowUserInput">
                                             <input type="checkbox" class="checkbox" ng-model="nfilt.autoUpdatedList" />
-                                            Get list fields from db
+                                            @DEBS.Translate("MessageModule.Get list fields from db")
                                         </div>
 
                                         <!-- If we have OR options in filter or filter is autoUpdated, and if userinput is allowed, it will be shown as selectable list -->
                                         <div ng-if="(nfilt.ValsOps.length>1||nfilt.autoUpdatedList)&&nfilt.allowUserInput" class="ngan-fade-mid">
-                                            <div class="txt-s-small txt-c-grmore">this filter will be used like a list of options</div>
+                                            <div class="txt-s-small txt-c-grmore">@DEBS.Translate("MessageModule.this filter will be used like a list of options")</div>
                                             <div class="txt-c-gr">
                                                 <input type="checkbox" class="checkbox" ng-model="nfilt.allowMultipleSelection" />
-                                                Allow multiple selection
+                                                @DEBS.Translate("MessageModule.Allow multiple selection")
                                             </div>
                                         </div>
                                     </div>
@@ -294,10 +296,10 @@
                                             {{nfilt.Key}}
                                         </span>
                                         <span class="txt-c-grmore">
-                                            (deleted)
+                                            @DEBS.Translate("MessageModule.(deleted)")
                                         </span>
                                         <span ng-click="RestoreItem(nfilt)" class="txt-c-gr txt-anim hover-highlight clickable">
-                                            restore
+                                            @DEBS.Translate("MessageModule.restore")
                                         </span>
                                     </div>
                                     <!--Validation info, if invalid-->
@@ -313,7 +315,7 @@
 
                 <!-- Possible keys for filter-->
                 <div class="col-xs-4">
-                    <div class="txt-s-med txt-c-gr">Table Keys:</div>
+                    <div class="txt-s-med txt-c-gr">@DEBS.Translate("MessageModule.Table Keys:")</div>
                     <div class="bounded-block-m">
                         <div ng-repeat="key in va.possiblekeys">
                             <div draggable draggableclass="{{va.keyDragClass}}" id="{{MakeId(va.keyIdPrefix,key.name)}}">
@@ -331,8 +333,8 @@
             <!-- save or not-->
             @* showed only if rfilter has currently selected table *@
             <div class="col-xs-12" ng-if="IsCurMFiltHasAnyTable()&&IsCurMFiltHasTable(va.curbasetable)">
-                <a class="abut" ng-click="SaveCurMFilt()">Save</a>
-                <a class="abut" ng-click="CloseEditor()">Cancel</a>
+                <a class="abut" ng-click="SaveCurMFilt()">@DEBS.Translate("MessageModule.Save")</a>
+                <a class="abut" ng-click="CloseEditor()">@DEBS.Translate("MessageModule.Cancel")</a>
             </div>
         </div>
     </div>
