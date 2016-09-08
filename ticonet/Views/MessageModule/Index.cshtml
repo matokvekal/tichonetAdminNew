@@ -5,8 +5,29 @@
 }
 @using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
+<style>
+    .hebrew-style{
+        direction: rtl;
+    }
+    .hebrew-style .col-xs-12,
+    .hebrew-style .col-xs-11,
+    .hebrew-style .col-xs-10,
+    .hebrew-style .col-xs-9,
+    .hebrew-style .col-xs-8,
+    .hebrew-style .col-xs-7,
+    .hebrew-style .col-xs-6,
+    .hebrew-style .col-xs-5,
+    .hebrew-style .col-xs-4,
+    .hebrew-style .col-xs-3,
+    .hebrew-style .col-xs-2,
+    .hebrew-style .col-xs-1
+    {
+        float: right !important
+    }
+</style>
+
 <!DOCTYPE html>
-<html>
+<html @*class="hebrew-style"*@>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +65,7 @@
 
         <script type="text/javascript">
              var translations = {
-                 "it {0} work": '@DEBS.Translate("MM.dfdf"),
+                 "it {0} work": '@DEBS.Translate("MM.dfdf")',
              }
         </script>
 
