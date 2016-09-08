@@ -11,7 +11,8 @@ namespace ticonet.App_Start
     using Ninject;
     using Ninject.Web.Common;
     using Scheduler.Tasks;
-
+    using Business_Logic.SqlContext;
+    using System.Web.Configuration;
     public static class NinjectWebCommon 
     {
         private static readonly Bootstrapper bootstrapper = new Bootstrapper();
@@ -62,7 +63,25 @@ namespace ticonet.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            //---------------------------------------------------------------------------------------------------------------------
+            // Bind Tasks - Start
+            //---------------------------------------------------------------------------------------------------------------------
+            //kernel.Bind<ITaskSending>().To<TaskSending>().InThreadScope();
             kernel.Bind<ITaskPopulateLinesPlan>().To<TaskPopulateLinesPlan>().InThreadScope();
+            //---------------------------------------------------------------------------------------------------------------------
+            // Bind Tasks - End
+            //---------------------------------------------------------------------------------------------------------------------
+            //---------------------------------------------------------------------------------------------------------------------
+            // Bind Context - Start
+            //---------------------------------------------------------------------------------------------------------------------
+            kernel.Bind<IDbConnectionFactory>()
+                .To<SqlConnectionFactory>()
+                .WithConstructorArgument("connectionString",
+            WebConfigurationManager.ConnectionStrings["DbConnectionString"].ConnectionString);
+            kernel.Bind(typeof(ISqlLogic)).To(typeof(SqlLogic)).InRequestScope();
+            //---------------------------------------------------------------------------------------------------------------------
+            // Bind Context - End
+            //---------------------------------------------------------------------------------------------------------------------
         }
     }
 }

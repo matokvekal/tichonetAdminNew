@@ -1,0 +1,160 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Module</title>
+    @Styles.Render("~/bundles/MessagesModule")
+    <link href="~/Content/AwaitLayer.css" rel="stylesheet" />
+    <link href="~/Content/CodeArea.css" rel="stylesheet" />
+    <link href="~/Content/MessageModule_PrototypeStyles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,300i,400,400i,700" rel="stylesheet">
+</head>
+<body>
+
+    <div class="main-container" ng-app="App" ng-cloak>
+
+        <!--HoveringNotifications Controller-->
+        <div ng-controller="NotificationController" data-ng-init="init()">
+            <div class="notification-container">
+                <div class="ngan-fade-mid" ng-repeat="msg in va.Messages | orderBy: '+created'">
+                    <div ng-click="CloseMsg(msg)" class="notification notification-{{msg.type.nclass}} move-near">
+                        <div class="notification-text">
+                            <div>
+                                <span class="notification-glyphicon glyphicon glyphicon-{{msg.type.glicon}}"></span>
+                                <span class="notification-header">
+                                    {{msg.header}}
+                                </span>
+                            </div>
+                            <div>
+                                <pre class="reset-pre">{{msg.body}}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Page blocks Controller-->
+        <div ng-controller="MessageModulePageController" data-ng-init="init()">
+            <!--Await-Layer-->
+            <div class="await-layer" ng-if="holdview">
+                <div class="floatingBarsIndicator">
+                    <div class="blockG" id="rotateG_01"></div>
+                    <div class="blockG" id="rotateG_02"></div>
+                    <div class="blockG" id="rotateG_03"></div>
+                    <div class="blockG" id="rotateG_04"></div>
+                    <div class="blockG" id="rotateG_05"></div>
+                    <div class="blockG" id="rotateG_06"></div>
+                    <div class="blockG" id="rotateG_07"></div>
+                    <div class="blockG" id="rotateG_08"></div>
+                </div>
+            </div>
+
+            <!--Everything Under Await-Layer-->
+            <div class="main-layer" ng-class="{'blured':holdview}">
+
+                <!--Page Header-->
+                <div class="main-block" style="background: #333333">
+                    <div class="txt-s-huge">
+                        <i style="padding:0 10px" 
+                           class="glyphicon glyphicon-cog iconclick" 
+                           ng-click="va.showSettings=!va.showSettings">
+                        </i> Mailing Module
+                    </div>
+                </div>
+                
+                <!--Page Body-->
+
+                <!-- Settings Window MOCK -->
+                <div class="settings-window ngan-fade-mid txt-c-grmore" ng-if="va.showSettings">
+                    <div class="txt-s-huge txt-c-base">
+                        Settings
+                    </div>
+                    <div class="txt-s-med txt-c-gr bot-bord">
+                        Mail service
+                    </div>
+                    <div>sender adress</div>
+                    <div>port...</div>
+                    <div class="txt-s-med txt-c-gr bot-bord">
+                        Sms service
+                    </div>
+                    <div>sender adress</div>
+                    <div>...</div>
+                </div>
+
+                <!-- Stored Filters -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.filters_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.filters_folded=!va.filters_folded">
+                            <i ng-class="{'turn90': !va.filters_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Stored Filters
+                    </span>
+
+                    <div class="unfold-block" ng-if="!va.filters_folded">
+                        @Html.Partial("_ngMFilters")
+                    </div>
+
+                </div>
+
+                <!-- Templates -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.templates_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.templates_folded=!va.templates_folded">
+                            <i ng-class="{'turn90': !va.templates_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Templates
+                    </span>
+
+                    <div class="unfold-block" ng-if="!va.templates_folded">
+                        @Html.Partial("_ngTemplates")
+                    </div>
+
+                </div>
+
+                <!-- Schedules -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.mails_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.mails_folded=!va.mails_folded">
+                            <i ng-class="{'turn90': !va.mails_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Schedules
+                    </span>
+                    <div class="unfold-block" ng-if="!va.mails_folded">
+                        @Html.Partial("_ngSchedules")
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.reports_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.reports_folded=!va.reports_folded">
+                            <i ng-class="{'turn90': !va.reports_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Reports
+                    </span>
+
+                    <div class="unfold-block" ng-if="!va.filters_folded">
+                        @Html.Partial("_ngTemplates")
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/AngularApp")
+    @*@RenderSection("scripts", required: false)*@
+</body>
+</html>
+
+

@@ -1,0 +1,77 @@
+﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+.textareabackdrop,
+.textareabackdrop::before,
+.textarea-highlighted::after,
+.textarea-highlighted,
+.textareabackdrop>.highlights
+{
+    box-sizing: border-box;
+}
+
+.textareabackdrop, .textarea-highlighted, .textarea-highlighted-container {
+  width: 100%;
+  height: 500px;
+}
+
+.textareabackdrop>.highlights, .textarea-highlighted {
+  font: 13px/18px 'Open Sans', sans-serif;
+  letter-spacing: 1px;
+}
+
+.textareabackdrop {
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  overflow: auto;
+  pointer-events: none;
+  transition: transform 1s;
+}
+
+.textareabackdrop,
+.textarea-highlighted
+{
+    border-radius: 5px;
+    padding: 15px !important
+}
+.textareabackdrop>.highlights {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	color: transparent;
+}
+
+.textarea-highlighted {
+    display: block;
+    position: absolute;
+    z-index: 2;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.65) !important;
+    overflow: auto;
+    resize: none;
+    color: #c7c7c7;
+}
+
+.textarea-highlighted:focus {
+    background-color: transparent !important;
+    color: black
+}
+
+mark.codeopen {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #b1F1e5;
+}
+
+mark.codeclose {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #b1d5e5;
+}
+
+mark.wc {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #c3c3c3
+}
+
+

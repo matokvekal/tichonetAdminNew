@@ -97,6 +97,43 @@ namespace IdentitySample
 
             bundles.Add(new StyleBundle("~/bundles/cssReport").Include(
                     "~/Content/Report.css"));
+
+
+            //---------------------------------------------
+            //Messages Module
+            //------------------------
+
+            bundles.Add(new ScriptBundle("~/bundles/AngularApp").Include(
+                    //AngularJS
+                    "~/Scripts/angular.js",
+                    "~/Scripts/angular-route.js",
+                    "~/Scripts/angular-animate.js",
+                    //Libraries
+                    "~/AngularApp/Libraries/CodeArea.js",
+
+                    "~/AngularApp/Libraries/TSNetLike/Collections/ArrayExtensions.js",
+                    "~/AngularApp/Libraries/TSNetLike/Collections/Dictionary.js",
+                    "~/AngularApp/Libraries/TSNetLike/Functors/Functors.js",
+                    "~/AngularApp/AppGlobal.js",
+                    //Models
+                    "~/AngularApp/SharedViewModels.js",
+                    //Controllers 
+                    "~/AngularApp/Controller.js",
+                    "~/AngularApp/Controllers/SHARED.js",
+                    "~/AngularApp/Controllers/NotificationController.js",
+                    "~/AngularApp/Controllers/FiltersController.js",
+                    "~/AngularApp/Controllers/TemplatesController.js",
+                    "~/AngularApp/Controllers/SendMessagesController.js",
+                    "~/AngularApp/Controllers/MessageModulePageController.js",
+
+                    //Configs
+                    //Services
+                    //App
+                    "~/AngularApp/App.js"
+            ));
+
+            bundles.Add(new StyleBundle("~/bundles/MessagesModule").Include(
+                    "~/Content/bootstrap.min.css"));
         }
     }
 }

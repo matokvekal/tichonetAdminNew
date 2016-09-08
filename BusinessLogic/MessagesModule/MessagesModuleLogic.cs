@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Business_Logic.MessagesModule.EntitiesExtensions;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Business_Logic.MessagesModule {
 
@@ -12,6 +15,14 @@ namespace Business_Logic.MessagesModule {
     }
 
     public class MessagesModuleLogic : MessagesModuleBaseLogic {
+
+        public MessagesModuleLogic() {
+
+        }
+
+        public MessagesModuleLogic(MessageContext OpenedContext) : base(OpenedContext) {
+
+        }
 
         //-------------------------------------------
         //CREATE
@@ -41,36 +52,41 @@ namespace Business_Logic.MessagesModule {
             return DB.Set<TEntity>().FirstOrDefault(x => x.Id == Id);
         }
 
-        public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IQueryFilter[] filters, out int countWithoutTake)
-                        where TEntity : class, IMessagesModuleEntity {
-            //TODO AVOID DATA MOVE IN MEMORY
-            var query = DB.Set<TEntity>().ToArray().AsEnumerable();
-            foreach(var filter in filters) {
-                if (!string.IsNullOrWhiteSpace(filter.op))
-                    throw new NotImplementedException("operators are not implemented. to implement it consider reading documentation and use conventions");
-                var propInfo = typeof(TEntity).GetProperty(filter.key);
+        public IQueryable<TEntity> GetFilteredQueryable<TEntity>(IEnumerable<IQueryFilter> filters = null, IQueryable<TEntity> baseQuery = null)
+                where TEntity : class, IMessagesModuleEntity {
+
+            var query = baseQuery ?? DB.Set<TEntity>().AsQueryable();
+            if (filters == null)
+                return query;
+            var entityType = typeof(TEntity);
+            var entityTypeExpr = Expression.Parameter(entityType);
+            filters = filters.Where(x => x.Valid);
+            foreach (var filter in filters) {
+                var propInfo = entityType.GetProperty(filter.key);
                 if (propInfo != null) {
-                    switch (filter.op) {
-                        //TODO Getting entity filtered not covers all cases yet (types is not considered)
-                        default:
-                            //TODO filter.val is a boxed value type, that is why straight check will fail
-                            query = query.Where(x => GetNullableString(propInfo.GetValue(x)) == filter.val.ToString());
-                            break;
-                    }
+                    var leftExpr = Expression.Property(entityTypeExpr, propInfo);
+                    var rightExpr = Expression.Convert(
+                        Expression.Constant(ValidateToType(filter.val, propInfo.PropertyType)), 
+                        propInfo.PropertyType);
+                    var condition = Expression.Lambda<Func<TEntity, bool>>(
+                        BuildExpressionByOperator(filter.op, leftExpr, rightExpr),
+                        entityTypeExpr);
+                    query = query.Where(condition);
                 }
             }
+            return query;
+        }
+
+        public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IEnumerable<IQueryFilter> filters, out int countWithoutTake, IQueryable<TEntity> baseQuery = null)
+        where TEntity : class, IMessagesModuleEntity {
+
+            var query = GetFilteredQueryable<TEntity>(filters, baseQuery);
             countWithoutTake = query.Count();
             if (Skip != null)
                 query.Skip(Skip.Value);
             if (Take != null)
                 query.Take(Take.Value);
             return query.ToList();
-        }
-
-        string GetNullableString (object obj) {
-            if (obj == null)
-                return "null";
-            return obj.ToString();
         }
 
         //-------------------------------------------
@@ -105,6 +121,7 @@ namespace Business_Logic.MessagesModule {
             return item;
         }
 
+
         /// <summary>
         /// Only Adding New Allowed
         /// </summary>
@@ -118,8 +135,9 @@ namespace Business_Logic.MessagesModule {
         /// <summary>
         /// Only Adding New Allowed
         /// </summary>
-        public void AddRange<TEntity>(ICollection<TEntity> items)
+        public void AddRange<TEntity>(IEnumerable<TEntity> items)
                         where TEntity : class, IMessagesModuleEntity {
+            if (items == null) return;
             DB.Set<TEntity>().AddRange(items);
             
             DB.SaveChanges();
@@ -145,6 +163,111 @@ namespace Business_Logic.MessagesModule {
             Delete(item);
             return true;
         }
+
+        public void DeleteRange<TEntity> (IEnumerable<TEntity> items)
+            where TEntity : class, IMessagesModuleEntity
+        {
+            DB.Set<TEntity>().RemoveRange(items);
+            DB.SaveChanges();
+        }
+
+        //-------------------------------------------
+        //Lazy Actions
+        //---------------------
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be saved, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public TEntity SaveLazy<TEntity>(TEntity item) where TEntity : class, IMessagesModuleEntity {
+            DB.Entry(item).State = EntityState.Modified;
+            return item;
+        }
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be saved, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public void SaveLazy<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity {
+            foreach (var item in items) {
+                DB.Entry(item).State = EntityState.Modified;
+            }
+        }
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be deleted, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public void DeleteLazy<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity {
+            DB.Set<TEntity>().RemoveRange(items);
+        }
+
+        /// <summary>
+        /// Executes all 'Lazy' actions.
+        /// </summary>
+        public void SaveChanges() {
+            DB.SaveChanges();
+        }
+
+        //-------------------------------------------
+        //Private part
+        //---------------------
+
+        static MethodInfo StringContains_methodInfo = typeof(string).GetMethod("Contains");
+
+        static Expression BuildExpressionByOperator(string Operator, MemberExpression property, Expression constant) {
+            Operator = Operator == null ? string.Empty : Operator.ToLower();
+            switch (Operator) {
+                case "<>":
+                case "notequals":
+                case "notequal":
+                case "noeq":
+                    return Expression.NotEqual(property, constant);
+                case ">":
+                case "greater":
+                case "great":
+                case "gr":
+                    return Expression.GreaterThan(property, constant);
+                case "<":
+                case "less":
+                case "le":
+                    return Expression.LessThan(property, constant);
+                case ">=":
+                case "greaterorequals":
+                case "greaterorequal":
+                case "greatoreq":
+                case "greq":
+                    return Expression.GreaterThanOrEqual(property, constant);
+                case "lessorequals":
+                case "lessorequal":
+                case "lessoreq":
+                case "leeq":
+                case "<=":
+                    return Expression.LessThanOrEqual(property, constant);
+                case "like":
+                case "contains":
+                    return Expression.Call(property, StringContains_methodInfo, constant);
+                case "=":
+                case "==":
+                case "===":
+                case "equals":
+                case "equal":
+                case "eq":
+                default:
+                    return Expression.Equal(property, constant);
+            }
+        }
+
+        Type dateNullableType = typeof(DateTime?);
+        Type dateType = typeof(DateTime);
+
+        object ValidateToType(object val, Type type) {
+            //date time for some reason comes here as string....
+            if (type == dateType || type == dateNullableType)
+                return DateTime.SpecifyKind( DateTime.Parse(val.ToString()), DateTimeKind.Utc );
+            return val;
+        }
+
     }
 
 }
