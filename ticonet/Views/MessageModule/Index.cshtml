@@ -1,6 +1,8 @@
 ﻿@{
     Layout = null;
 }
+@using DEBS = Business_Logic.DictExpressionBuilderSystem;
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,8 +40,14 @@
             </div>
         </div>
 
+        <script type="text/javascript">
+             var translations = {
+                 "it {0} work": '@DEBS.Translate("MM.dfdf"),
+             }
+        </script>
+
         <!--Page blocks Controller-->
-        <div ng-controller="MessageModulePageController" data-ng-init="init()">
+        <div ng-controller="MessageModulePageController" data-ng-init="init({translations: translations})">
             <!--Await-Layer-->
             <div class="await-layer" ng-if="holdview">
                 <div class="floatingBarsIndicator">
@@ -63,7 +71,7 @@
                         <i style="padding:0 10px" 
                            class="glyphicon glyphicon-cog iconclick" 
                            ng-click="va.showSettings=!va.showSettings">
-                        </i> Mailing Module
+                        </i>@DEBS.Translate("MessageMdl.Mailing Module")
                     </div>
                 </div>
                 
@@ -72,7 +80,7 @@
                 <!-- Settings Window MOCK -->
                 <div class="settings-window ngan-fade-mid txt-c-grmore" ng-if="va.showSettings">
                     <div class="txt-s-huge txt-c-base">
-                        Settings
+                        @DEBS.Translate("MessageMdl.Settings")
                     </div>
                     <div class="txt-s-med txt-c-gr bot-bord">
                         Mail service
@@ -86,13 +94,13 @@
                     <div>...</div>
                 </div>
 
-                <!-- Stored Filters -->
+                <!-- Recepient Filters -->
                 <div class="main-block bot-bord" ng-class="{'unfolded': !va.filters_folded}">
                     <span class="txt-s-big">
                         <a class="asimple" ng-click="va.filters_folded=!va.filters_folded">
                             <i ng-class="{'turn90': !va.filters_folded}" class="rotable glyphicon glyphicon-play"></i>
                         </a>
-                        Stored Filters
+                        @DEBS.Translate("MessageMdl.Recepient Filters")
                     </span>
 
                     <div class="unfold-block" ng-if="!va.filters_folded">
@@ -107,7 +115,7 @@
                         <a class="asimple" ng-click="va.templates_folded=!va.templates_folded">
                             <i ng-class="{'turn90': !va.templates_folded}" class="rotable glyphicon glyphicon-play"></i>
                         </a>
-                        Templates
+                        @DEBS.Translate("MessageMdl.Templates")
                     </span>
 
                     <div class="unfold-block" ng-if="!va.templates_folded">
@@ -122,7 +130,7 @@
                         <a class="asimple" ng-click="va.mails_folded=!va.mails_folded">
                             <i ng-class="{'turn90': !va.mails_folded}" class="rotable glyphicon glyphicon-play"></i>
                         </a>
-                        Schedules
+                        @DEBS.Translate("MessageMdl.Schedules")
                     </span>
                     <div class="unfold-block" ng-if="!va.mails_folded">
                         @Html.Partial("_ngSchedules")
@@ -135,11 +143,11 @@
                         <a class="asimple" ng-click="va.reports_folded=!va.reports_folded">
                             <i ng-class="{'turn90': !va.reports_folded}" class="rotable glyphicon glyphicon-play"></i>
                         </a>
-                        Reports
+                        @DEBS.Translate("MessageMdl.Reports")
                     </span>
 
-                    <div class="unfold-block" ng-if="!va.filters_folded">
-                        @Html.Partial("_ngTemplates")
+                    <div class="unfold-block" ng-if="!va.reports_folded">
+                        @Html.Partial("_ngReports")
                     </div>
 
                 </div>

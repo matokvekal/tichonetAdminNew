@@ -62,7 +62,7 @@ var AngularApp;
                     filt.ValidationErrors = [];
                     var itemNameInvalid = AngularApp.isEmptyOrSpaces(filt.Name);
                     if (itemNameInvalid)
-                        filt.ValidationErrors.push("Recepient filter name cannot be empty");
+                        filt.ValidationErrors.push(_this.Translator.Translate("MessageModule.Recepient filter name cannot be empty"));
                     var noRecepients = filt.reccards.filter(function (x) { return !x.ng_ToDelete; }).length === 0;
                     if (noRecepients)
                         filt.ValidationErrors.push("Recepient filter should have at least one recepient card");
@@ -97,7 +97,7 @@ var AngularApp;
                         item.ValidationErrors.push("code cannot be empty");
                     var keysInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.Key; });
                     if (keysInvalid)
-                        item.ValidationErrors.push("base table has no such key [" + item.Key + "]");
+                        item.ValidationErrors.push(_this.Translator.Translate("base table has no such key [{0}]", item.Key));
                     var codeDublicated = !_this.validateDublCodeWildcard(item);
                     if (codeDublicated)
                         item.ValidationErrors.push("wildcard code is not uniq: " + item.Code);
@@ -376,6 +376,9 @@ var AngularApp;
                 this.request_msgHandlerFail = function (msg) {
                     _this.ShowNotification("Error", msg, { glicon: "ban-circle", nclass: "error" });
                 };
+                //translator 
+                //this.Translator.Translate("this is {0} work!", "GONNA")
+                this.rootScope.$broadcast('Give_Me_Translator', { postBack: function (T) { return _this.Translator = T; } });
                 //------------------- Scope Init
                 this.scope.NewMFilt = function () { return _this.turnMFilterCreate(); };
                 this.scope.EditMFilt = function (mfilt) { return _this.turnMFilterEdit(mfilt); };
@@ -484,4 +487,3 @@ var AngularApp;
         Controllers.MFiltersController = MFiltersController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=FiltersController.js.map

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace ticonet.Controllers
 {
+    [Authorize]
     public class MessageModuleController : Controller
     {
         // GET: MessageModule

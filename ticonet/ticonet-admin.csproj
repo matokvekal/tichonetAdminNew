@@ -1339,8 +1339,10 @@
     <TypeScriptCompile Include="AngularApp\Controllers\SHARED.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\TemplatesController.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\CodeArea.ts" />
+    <TypeScriptCompile Include="AngularApp\Libraries\TranslatonUtils.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Collections\ArrayExtensions.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Collections\Dictionary.ts" />
+    <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\StringExtensions.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Functors\Functors.ts" />
     <TypeScriptCompile Include="AngularApp\SharedViewModels.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />

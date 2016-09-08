@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using ticonet.Controllers.Ng.ViewModels;
 using ticonet.ParentControllers;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
 namespace ticonet.Controllers.Ng {
 
@@ -31,7 +32,7 @@ namespace ticonet.Controllers.Ng {
                     l.Add(item);
                 }
             }
-            return NgResult.Succes(models.Count() + " new schedules was added");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} new schedules was added", models.Count()));
         }
 
         protected override NgResult _delete(MessageScheduleVM[] models) {

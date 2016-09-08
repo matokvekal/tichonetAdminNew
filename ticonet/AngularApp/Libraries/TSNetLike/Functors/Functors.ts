@@ -4,7 +4,7 @@
     export function snd(f, s) { return s }
 
     export function F(f: (x?)=>any, x?) {
-        if ('undefined' !== typeof f && f !== null) {
+        if ('function' === typeof f) {
             if ('undefined' !== typeof x)
                 f(x)
             else
@@ -13,7 +13,7 @@
     }
 
     export function PF(defaultVal, f: (x?) => any, x?) {
-        if ('undefined' !== typeof f && f !== null) {
+        if ('function' === typeof f) {
             if ('undefined' !== typeof x)
                 return f(x)
             else

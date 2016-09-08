@@ -112,8 +112,13 @@ namespace IdentitySample
                     "~/AngularApp/Libraries/CodeArea.js",
 
                     "~/AngularApp/Libraries/TSNetLike/Collections/ArrayExtensions.js",
+                    "~/AngularApp/Libraries/TSNetLike/StringExtensions.js",
+
                     "~/AngularApp/Libraries/TSNetLike/Collections/Dictionary.js",
                     "~/AngularApp/Libraries/TSNetLike/Functors/Functors.js",
+
+                    "~/AngularApp/Libraries/TranslatonUtils.js",
+
                     "~/AngularApp/AppGlobal.js",
                     //Models
                     "~/AngularApp/SharedViewModels.js",

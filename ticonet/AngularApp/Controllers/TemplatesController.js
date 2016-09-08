@@ -213,4 +213,3 @@ var AngularApp;
         Controllers.TemplatesController = TemplatesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=TemplatesController.js.map

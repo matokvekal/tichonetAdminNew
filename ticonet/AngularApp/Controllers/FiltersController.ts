@@ -36,6 +36,8 @@
     }
 
     export class MFiltersController extends Controller<MFiltersVA> {
+        private Translator: TranslatonUtils.Translator
+
         constructor($rootScope, $scope, $http) {
             super($rootScope, $scope, $http)
         }
@@ -49,6 +51,10 @@
             this.request_msgHandlerFail = (msg) => {
                 this.ShowNotification("Error", msg, { glicon:"ban-circle",nclass:"error"})
             }
+
+            //translator 
+            //this.Translator.Translate("this is {0} work!", "GONNA")
+            this.rootScope.$broadcast('Give_Me_Translator', {postBack:(T) => this.Translator = T})
 
             //------------------- Scope Init
 
@@ -198,7 +204,7 @@
             filt.ValidationErrors = []
             let itemNameInvalid = isEmptyOrSpaces(filt.Name)
             if (itemNameInvalid)
-                filt.ValidationErrors.push("Recepient filter name cannot be empty");
+                filt.ValidationErrors.push(this.Translator.Translate("MessageModule.Recepient filter name cannot be empty"));
             let noRecepients = filt.reccards.filter(x => !x.ng_ToDelete).length === 0
             if (noRecepients)
                 filt.ValidationErrors.push("Recepient filter should have at least one recepient card");
@@ -235,7 +241,7 @@
                 item.ValidationErrors.push("code cannot be empty");
             let keysInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.Key)
             if (keysInvalid)
-                item.ValidationErrors.push("base table has no such key [" + item.Key + "]");
+                item.ValidationErrors.push(this.Translator.Translate("base table has no such key [{0}]", item.Key));
             let codeDublicated = !this.validateDublCodeWildcard(item)
             if (codeDublicated)
                 item.ValidationErrors.push("wildcard code is not uniq: " + item.Code);

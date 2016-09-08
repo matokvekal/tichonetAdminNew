@@ -62,4 +62,3 @@ var AngularApp;
     }
     AngularApp.IsNullOrUndefined = IsNullOrUndefined;
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=AppGlobal.js.map

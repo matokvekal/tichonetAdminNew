@@ -1,5 +1,7 @@
 ﻿namespace AngularApp.Controllers {
     import col = TSNetLike.Collections
+    import tru = TranslatonUtils
+    import fnc = TSNetLike.Functors
 
     class PageBlocksVA {
         filters_folded = true
@@ -13,8 +15,16 @@
             super($rootScope, $scope, $http)
             this.TurnHoldViewOnOthersControllers()
         }
+        Translator: tru.Translator
+
         buildVa(): PageBlocksVA { return new PageBlocksVA }
-        init(data): void {}
+        init(data): void {
+            data = data || { translations: { "it {0} work": "it will {0} work"}}
+            this.Translator = new tru.Translator(data.translations)
+            this.rootScope.$on('Give_Me_Translator', (event, args) => {
+                fnc.F(args.postBack,this.Translator)
+            });
+        }
     }
 
 

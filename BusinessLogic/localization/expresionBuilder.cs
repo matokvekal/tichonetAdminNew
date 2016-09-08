@@ -9,6 +9,11 @@
         {
             return localizedSystemDisplayNameAttribute.GetMessageFromResource(expression);
         }
+
+        public static string Translate(string expression,params object[] args) {
+            return string.Format(
+                localizedSystemDisplayNameAttribute.GetMessageFromResource(expression),args);
+        }
     }
 }
 

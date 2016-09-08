@@ -7,6 +7,8 @@ var AngularApp;
 (function (AngularApp) {
     var Controllers;
     (function (Controllers) {
+        var tru = TranslatonUtils;
+        var fnc = TSNetLike.Functors;
         var PageBlocksVA = (function () {
             function PageBlocksVA() {
                 this.filters_folded = true;
@@ -23,10 +25,16 @@ var AngularApp;
                 this.TurnHoldViewOnOthersControllers();
             }
             MessageModulePageController.prototype.buildVa = function () { return new PageBlocksVA; };
-            MessageModulePageController.prototype.init = function (data) { };
+            MessageModulePageController.prototype.init = function (data) {
+                var _this = this;
+                data = data || { translations: { "it {0} work": "it will {0} work" } };
+                this.Translator = new tru.Translator(data.translations);
+                this.rootScope.$on('Give_Me_Translator', function (event, args) {
+                    fnc.F(args.postBack, _this.Translator);
+                });
+            };
             return MessageModulePageController;
         }(AngularApp.Controller));
         Controllers.MessageModulePageController = MessageModulePageController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=MessageModulePageController.js.map

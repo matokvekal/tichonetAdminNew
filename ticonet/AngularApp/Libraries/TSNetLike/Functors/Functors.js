@@ -7,7 +7,7 @@ var TSNetLike;
         function snd(f, s) { return s; }
         Functors.snd = snd;
         function F(f, x) {
-            if ('undefined' !== typeof f && f !== null) {
+            if ('function' === typeof f) {
                 if ('undefined' !== typeof x)
                     f(x);
                 else
@@ -16,7 +16,7 @@ var TSNetLike;
         }
         Functors.F = F;
         function PF(defaultVal, f, x) {
-            if ('undefined' !== typeof f && f !== null) {
+            if ('function' === typeof f) {
                 if ('undefined' !== typeof x)
                     return f(x);
                 else
@@ -27,4 +27,3 @@ var TSNetLike;
         Functors.PF = PF;
     })(Functors = TSNetLike.Functors || (TSNetLike.Functors = {}));
 })(TSNetLike || (TSNetLike = {}));
-//# sourceMappingURL=Functors.js.map

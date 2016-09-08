@@ -25,11 +25,13 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             var Now = DateTime.Now;
 
             bool dayLimited = restrictions.MaxMessagesInDay > 0;
-            int dayLimit = 
-                restrictions.MaxMessagesInDay - log.GetMessagesSendedForPeriodCount(new DateTimePeriod(Now.AddDays(-1), Now));
+            int dayLimit = dayLimited ?
+                restrictions.MaxMessagesInDay - log.GetMessagesSendedForPeriodCount(new DateTimePeriod(Now.AddDays(-1), Now))
+                : 0;
             bool hourLimited = restrictions.MaxMessagesInHour > 0;
-            int hourLimit =
-                restrictions.MaxMessagesInHour - log.GetMessagesSendedForPeriodCount(new DateTimePeriod(Now.AddHours(-1), Now));
+            int hourLimit = hourLimited ?
+                restrictions.MaxMessagesInHour - log.GetMessagesSendedForPeriodCount(new DateTimePeriod(Now.AddHours(-1), Now))
+                : 0;
 
             if (!dayLimited && !hourLimited)
                 return messages;
