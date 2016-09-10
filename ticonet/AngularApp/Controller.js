@@ -42,6 +42,22 @@ var AngularApp;
         return ConcurentRequestHandler;
     }());
     AngularApp.ConcurentRequestHandler = ConcurentRequestHandler;
+    function HandleRequestCallBacks(data) {
+        if (AngularApp.IsNullOrUndefined(data))
+            return;
+        if (IsConcurentRequestHandler(data.onSucces))
+            data.onSucces.RegisterRequestStart();
+        if (IsConcurentRequestHandler(data.onFailed))
+            data.onFailed.RegisterRequestStart();
+    }
+    AngularApp.HandleRequestCallBacks = HandleRequestCallBacks;
+    function HandleCallBacks(onSucces, onFailed) {
+        if (IsConcurentRequestHandler(onSucces))
+            onSucces.RegisterRequestStart();
+        if (IsConcurentRequestHandler(onFailed))
+            onFailed.RegisterRequestStart();
+    }
+    AngularApp.HandleCallBacks = HandleCallBacks;
     function IsConcurentRequestHandler(cb) {
         return !(AngularApp.IsNullOrUndefined(cb) || AngularApp.IsNullOrUndefined(cb.TryCall));
     }
@@ -55,6 +71,7 @@ var AngularApp;
         else
             fnc.F(cb, response);
     }
+    AngularApp.RunCallbackOrHandler = RunCallbackOrHandler;
     var FetchParams = (function () {
         function FetchParams() {
             var _this = this;
@@ -131,10 +148,7 @@ var AngularApp;
             this.request_msgHandlerSucces = null;
             this.request_msgHandlerFail = null;
             this.request = function (holdTillResponse, data) {
-                if (IsConcurentRequestHandler(data.onSucces))
-                    data.onSucces.RegisterRequestStart();
-                if (IsConcurentRequestHandler(data.onFailed))
-                    data.onFailed.RegisterRequestStart();
+                HandleRequestCallBacks(data);
                 if (holdTillResponse)
                     _this.turnHoldView(true);
                 fnc.F(data.before);
@@ -161,10 +175,7 @@ var AngularApp;
             };
             /**looks on response.data.items*/
             this.fetchtodict = function (holdTillResponse, data, container, keyValueSelector, clearContainer) {
-                if (IsConcurentRequestHandler(data.onSucces))
-                    data.onSucces.RegisterRequestStart();
-                if (IsConcurentRequestHandler(data.onFailed))
-                    data.onFailed.RegisterRequestStart();
+                HandleRequestCallBacks(data);
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
@@ -177,10 +188,7 @@ var AngularApp;
             };
             /**looks on response.data.items*/
             this.fetchtoarr = function (holdTillResponse, data, container, clearContainer) {
-                if (IsConcurentRequestHandler(data.onSucces))
-                    data.onSucces.RegisterRequestStart();
-                if (IsConcurentRequestHandler(data.onFailed))
-                    data.onFailed.RegisterRequestStart();
+                HandleRequestCallBacks(data);
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
@@ -194,10 +202,7 @@ var AngularApp;
             /**looks on response.data.items*/
             this.updatetoarr = function (holdTillResponse, data, container, equalityPredicate, pushnew) {
                 if (pushnew === void 0) { pushnew = true; }
-                if (IsConcurentRequestHandler(data.onSucces))
-                    data.onSucces.RegisterRequestStart();
-                if (IsConcurentRequestHandler(data.onFailed))
-                    data.onFailed.RegisterRequestStart();
+                HandleRequestCallBacks(data);
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
@@ -220,6 +225,8 @@ var AngularApp;
                 };
                 _this.request(holdTillResponse, data);
             };
+            this.FetchToArr = this.fetchtoarr;
+            this.Request = this.request;
             this.scope.holdview = false;
             this.va = this.buildVa();
             this.scope.va = this.va;
@@ -238,4 +245,3 @@ var AngularApp;
     }());
     AngularApp.Controller = Controller;
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=Controller.js.map

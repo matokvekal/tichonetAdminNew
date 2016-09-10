@@ -25,6 +25,7 @@ namespace Business_Logic.MessagesModule
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> FinishedOn { get; set; }
         public string Errors { get; set; }
+        public bool IsSms { get; set; }
     
         public virtual tblMessageSchedule tblMessageSchedule { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

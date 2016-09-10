@@ -17,6 +17,34 @@ namespace Business_Logic.MessagesModule.Mechanisms {
 
     public static class TASK_PROTOTYPE {
 
+        class TaskHandler {
+            object _lock = new object();
+            bool allowExecution = true;
+
+            /// <summary>
+            /// Returns True if task execution allowed.
+            /// After task is done u SHOULD call 'ReportTaskEnded()'!
+            /// </summary>
+            /// <returns></returns>
+            public bool GetSafeThreadPermission () {
+                lock (_lock) {
+                    if (allowExecution) {
+                        allowExecution = false;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            
+            public void ReportTaskEnded() {
+                lock (_lock) {
+                    if (allowExecution)
+                        throw new InvalidOperationException("Some task reported end of execution, when no start of execution was registered.");
+                    allowExecution = true;
+                }
+            }
+        }
+
         public static List<Message> GetDemoMessages (MessagesModuleLogic logic, IMessageTemplate tmpl, ISqlLogic sqlLogic, bool isSms, int MaxCount = 0) {
             using (var mng = BatchCreationManager.NewInstance(sqlLogic, logic)) {
                 var cltr = new MessageDataCollector(mng);
@@ -51,24 +79,29 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             }
         }
 
+        static object ImmediateBatchCreation_L = new object();
+
         public static BatchCreationResult RunImmediateBatchCreation (tblMessageSchedule Schedule, int Priority, ISqlLogic SqlLogic, MessagesModuleLogic Logic) {
-            using (var manager = BatchCreationManager.NewInstance(SqlLogic, Logic)) {
-                var creator = new BatchCreator(manager);
-                var result = creator.CreateBatch(Schedule, Priority);
-                manager.SaveResultsToDB(new[] { result });
-                return result;
+            lock (ImmediateBatchCreation_L) {
+                using (var manager = BatchCreationManager.NewInstance(SqlLogic, Logic)) {
+                    var creator = new BatchCreator(manager);
+                    var result = creator.CreateBatch(Schedule, Priority);
+                    manager.SaveResultsToDB(new[] { result });
+                    return result;
+                }
             }
         }
 
         static BatchSendingTaskSettings DefaultsBatchSendingTaskSettings = new BatchSendingTaskSettings();
 
+        static TaskHandler ScheduledBatchSending_H = new TaskHandler();
+
         public static void RunScheduledBatchSending(MessagesModuleLogic Logic, BatchSendingTaskSettings Settings = null) {
-            Settings = Settings ?? DefaultsBatchSendingTaskSettings;
-            using (var transaction = new TransactionScope()) {
-                bool success = true;
-                //TODO TOTAL REFACTOR ASAP!!!!!!!!!!!!!!!!!!!!!!!
-                //TRY-CATCH and complete transaction?
-                using (var manager = BatchSendingManager.NewInstance(Settings,Logic)) {
+            if (!ScheduledBatchSending_H.GetSafeThreadPermission())
+                return;
+            try {
+                Settings = Settings ?? DefaultsBatchSendingTaskSettings;
+                using (var manager = BatchSendingManager.NewInstance(Settings, Logic)) {
                     var allPendingMails = manager.GetPendingEmails();
                     var allPendingSms = manager.GetPendingSms();
 
@@ -81,11 +114,11 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         .ToArray();
 
                     //EMAIL
-                    var emailProviders = manager.GetActiveEmailProviders().GetEnumerator();
+                    var emailProviders = manager.GetActiveEmailProviders().ToList().GetEnumerator();
                     var Emailer = new EmailSender(manager);
                     SendCycle(manager, allPendingMails, emailProviders, Emailer);
                     //SMS
-                    var smsProviders = manager.GetActiveSmsProviders().GetEnumerator();
+                    var smsProviders = manager.GetActiveSmsProviders().ToList().GetEnumerator();
                     var Smser = new SmsSender(manager);
                     SendCycle(manager, allPendingSms, smsProviders, Smser);
 
@@ -101,11 +134,12 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         }
                         manager.Logic.SaveLazy(batch);
                     }
-
-                    try { manager.Logic.SaveChanges(); } catch { success = false; }
+                    Logic.SaveChanges();
+                    Logic.Dispose();
                 }
-                Logic.Dispose();
-                if(success) transaction.Complete();
+            }
+            finally {
+                ScheduledBatchSending_H.ReportTaskEnded();
             }
         }
 
@@ -127,9 +161,9 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                     DateTime start = DateTime.Now;
                     MessageSender.SendBatch(pendingChunk, provider);
                     manager.StoreSendProviderWorkHistory(provider, start, DateTime.Now.AddMilliseconds(1), getted);
-                    //UPDATE DB AFTER StoreSendProviderWorkHistory somehow:
                     manager.Logic.DeleteLazy(pendingChunk.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue));
-
+                    //UPDATE DB AFTER StoreSendProviderWorkHistory somehow:
+                    manager.Logic.SaveChanges();
                     Counter += getted;
                 }
                 if (allPendingCount == Counter)

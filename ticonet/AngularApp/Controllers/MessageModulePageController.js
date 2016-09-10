@@ -38,4 +38,3 @@ var AngularApp;
         Controllers.MessageModulePageController = MessageModulePageController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=MessageModulePageController.js.map

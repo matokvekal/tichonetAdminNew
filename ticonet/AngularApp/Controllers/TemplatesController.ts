@@ -223,7 +223,10 @@
 
 
         hasRecepient = (rc: RecepientCardVM) => {
-            return this.va.curtemplate.ChoosenReccards.any(x => x === rc.Id)
+            let item = this.va.curtemplate;
+            if (IsNullOrUndefined(item.ChoosenReccards))
+                item.ChoosenReccards = []
+            return item.ChoosenReccards.any(x => x === rc.Id)
         }
 
         switchRecepient = (rc: RecepientCardVM) => {

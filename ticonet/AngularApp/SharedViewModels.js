@@ -2,6 +2,10 @@ var AngularApp;
 (function (AngularApp) {
     var Controllers;
     (function (Controllers) {
+        function FindById(arr, Id) {
+            return arr.first(function (x) { return x.Id === Id; });
+        }
+        Controllers.FindById = FindById;
         var BaseTableVM = (function () {
             function BaseTableVM() {
             }
@@ -90,10 +94,65 @@ var AngularApp;
             return MessageScheduleVM;
         }());
         Controllers.MessageScheduleVM = MessageScheduleVM;
-        function FindById(arr, Id) {
-            return arr.first(function (x) { return x.Id === Id; });
-        }
-        Controllers.FindById = FindById;
+        var BatchReportVM = (function () {
+            function BatchReportVM() {
+            }
+            BatchReportVM.ServerDataMarshall = function (data) {
+                data.CreatedOn = Controllers.formatVal(data.CreatedOn, "datetime");
+                data.FinishedOn = Controllers.formatVal(data.FinishedOn, "datetime");
+                return data;
+            };
+            return BatchReportVM;
+        }());
+        Controllers.BatchReportVM = BatchReportVM;
+        var MessageReportVM = (function () {
+            function MessageReportVM() {
+            }
+            return MessageReportVM;
+        }());
+        Controllers.MessageReportVM = MessageReportVM;
+        var SendProviderRestrictionData = (function () {
+            function SendProviderRestrictionData() {
+                this.MaxMessagesInHour = 1;
+                this.MaxMessagesInDay = 1;
+            }
+            return SendProviderRestrictionData;
+        }());
+        Controllers.SendProviderRestrictionData = SendProviderRestrictionData;
+        var EmailSenderDataProviderVM = (function () {
+            function EmailSenderDataProviderVM() {
+                this.Id = -1;
+                this.Name = "NewEmailServiceProvider";
+                this.IsActive = false;
+                this.FromEmailAddress = "";
+                this.FromEmailDisplayName = "";
+                this.FromEmailPassword = "";
+                this.SmtpHostName = "";
+                this.SmtpPort = 25;
+                this.EnableSsl = true;
+                this.RestrictionData = new SendProviderRestrictionData();
+                this.ng_JustCreated = true;
+                this.ng_ToDelete = false;
+            }
+            return EmailSenderDataProviderVM;
+        }());
+        Controllers.EmailSenderDataProviderVM = EmailSenderDataProviderVM;
+        var SmsSenderDataProviderVM = (function () {
+            function SmsSenderDataProviderVM() {
+                this.Id = -1;
+                this.Name = "NewSmsServiceProvider";
+                this.IsActive = false;
+                this.FromDisplayName = "";
+                this.FromPhoneNumber = "";
+                this.Username = "";
+                this.Password = "";
+                this.MessageInterval = 5;
+                this.RestrictionData = new SendProviderRestrictionData();
+                this.ng_JustCreated = true;
+                this.ng_ToDelete = false;
+            }
+            return SmsSenderDataProviderVM;
+        }());
+        Controllers.SmsSenderDataProviderVM = SmsSenderDataProviderVM;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SharedViewModels.js.map

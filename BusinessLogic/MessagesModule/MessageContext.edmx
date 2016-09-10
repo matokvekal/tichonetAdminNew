@@ -66,6 +66,7 @@
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="FinishedOn" Type="datetime" />
           <Property Name="Errors" Type="nvarchar(max)" />
+          <Property Name="IsSms" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="tblMessageSchedule">
           <Key>
@@ -405,6 +406,7 @@
           <Property Name="Errors" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblMessageSchedule" Relationship="Messages.tblMessageBatchtblMessageSchedule" FromRole="tblMessageBatch" ToRole="tblMessageSchedule" />
           <NavigationProperty Name="tblMessages" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessageBatch" ToRole="tblMessage" />
+          <Property Name="IsSms" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="tblMessageSchedule">
           <Key>
@@ -615,6 +617,7 @@
           <EntitySetMapping Name="tblMessageBatches">
             <EntityTypeMapping TypeName="Messages.tblMessageBatch">
               <MappingFragment StoreEntitySet="tblMessageBatch">
+                <ScalarProperty Name="IsSms" ColumnName="IsSms" />
                 <ScalarProperty Name="Errors" ColumnName="Errors" />
                 <ScalarProperty Name="FinishedOn" ColumnName="FinishedOn" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />

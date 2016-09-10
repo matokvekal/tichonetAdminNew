@@ -133,7 +133,10 @@ var AngularApp;
                     textarea.focus();
                 };
                 this.hasRecepient = function (rc) {
-                    return _this.va.curtemplate.ChoosenReccards.any(function (x) { return x === rc.Id; });
+                    var item = _this.va.curtemplate;
+                    if (AngularApp.IsNullOrUndefined(item.ChoosenReccards))
+                        item.ChoosenReccards = [];
+                    return item.ChoosenReccards.any(function (x) { return x === rc.Id; });
                 };
                 this.switchRecepient = function (rc) {
                     var has = _this.hasRecepient(rc);
@@ -213,4 +216,3 @@ var AngularApp;
         Controllers.TemplatesController = TemplatesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=TemplatesController.js.map

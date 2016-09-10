@@ -14,10 +14,10 @@
         schedsHeader_ElemId = 'schedss_header'
         schedsBody_ElemId = 'schedss_body'
 
-        gridSettings: GridSettingsManager;
+        gridSettings: GridSettingsManager_proto;
     }
 
-    class GridSettingsManager {
+    class GridSettingsManager_proto {
         constructor(RepeatModes: string[], DateOperators: string[]) {
             this.repeatmodes = RepeatModes.concat("");
             this.dateoperators = DateOperators.concat("");
@@ -170,7 +170,7 @@
             let CreateGridManagerAndFetchSchedules =
                 new ConcurentRequestHandler(
                     () => {
-                        this.va.gridSettings = new GridSettingsManager(this.va.repeatmodes, dateOperators.select(x => x.SQLString))
+                        this.va.gridSettings = new GridSettingsManager_proto(this.va.repeatmodes, dateOperators.select(x => x.SQLString))
                         this.refetchSchedules()
                     },
                     true)
@@ -317,7 +317,10 @@
         }
 
         hasRecepient = (rc: RecepientCardVM) => {
-            return this.va.cursched.ChoosenReccards.any(x => x === rc.Id)
+            let item = this.va.cursched;
+            if (IsNullOrUndefined(item.ChoosenReccards))
+                item.ChoosenReccards = []
+            return item.ChoosenReccards.any(x => x === rc.Id)
         }
 
         switchRecepient = (rc: RecepientCardVM) => {

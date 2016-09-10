@@ -122,13 +122,16 @@ namespace IdentitySample
                     "~/AngularApp/AppGlobal.js",
                     //Models
                     "~/AngularApp/SharedViewModels.js",
-                    //Controllers 
+                    //Common
                     "~/AngularApp/Controller.js",
+                    "~/AngularApp/GridManager.js",
                     "~/AngularApp/Controllers/SHARED.js",
+                    //Controllers 
                     "~/AngularApp/Controllers/NotificationController.js",
                     "~/AngularApp/Controllers/FiltersController.js",
                     "~/AngularApp/Controllers/TemplatesController.js",
                     "~/AngularApp/Controllers/SendMessagesController.js",
+                    "~/AngularApp/Controllers/ReportsController.js",
                     "~/AngularApp/Controllers/MessageModulePageController.js",
 
                     //Configs

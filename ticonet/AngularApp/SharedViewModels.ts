@@ -9,6 +9,10 @@
         Id: number
     }
 
+    export function FindById<T extends IIndeficated>(arr: T[], Id: number) {
+        return arr.first(x => x.Id === Id)
+    }
+
     export interface IValidable {
         Invalid: boolean
         ValidationErrors: string[]
@@ -168,8 +172,79 @@
         ng_ToDelete: boolean
     }
 
-    export function FindById<T extends IIndeficated>(arr: T[], Id: number) {
-        return arr.first(x => x.Id === Id)
+    export class BatchReportVM implements IIndeficated, INgViewModel {
+        Id: number
+
+        BaseScheduleName: string
+        CreatedOn: Date
+        FinishedOn: Date
+        Errors: string
+        IsSms: boolean
+        MessagesCount: number
+
+        ng_JustCreated: boolean
+        ng_ToDelete: boolean
+
+        static ServerDataMarshall = (data: BatchReportVM) => {
+            data.CreatedOn = formatVal(data.CreatedOn, "datetime")
+            data.FinishedOn = formatVal(data.FinishedOn, "datetime")
+            return data;
+        }
     }
+
+    export class MessageReportVM implements IIndeficated, INgViewModel {
+        Id: number
+
+        Header: string
+        Body: string
+        Adress: string
+        IsSms: boolean
+        SentOn: Date
+        MessageBatchId: number
+        ErrorLog: string
+        IsPending: boolean
+
+        ng_JustCreated: boolean
+        ng_ToDelete: boolean
+    }
+
+    export class SendProviderRestrictionData {
+        MaxMessagesInHour: number = 1
+        MaxMessagesInDay: number = 1
+    }
+
+    export class EmailSenderDataProviderVM implements IIndeficated, INgViewModel {
+        Id: number = -1
+
+        Name: string = "NewEmailServiceProvider"
+        IsActive: boolean = false
+        FromEmailAddress: string = ""
+        FromEmailDisplayName: string = ""
+        FromEmailPassword: string = ""
+        SmtpHostName: string = ""
+        SmtpPort: number = 25
+        EnableSsl: boolean = true
+        RestrictionData: SendProviderRestrictionData = new SendProviderRestrictionData()
+
+        ng_JustCreated: boolean = true
+        ng_ToDelete: boolean = false
+    }
+
+    export class SmsSenderDataProviderVM implements IIndeficated, INgViewModel {
+        Id: number = -1
+
+        Name: string = "NewSmsServiceProvider"
+        IsActive: boolean = false
+        FromDisplayName: string = ""
+        FromPhoneNumber: string = ""
+        Username: string = ""
+        Password: string = ""
+        MessageInterval: number = 5
+        RestrictionData: SendProviderRestrictionData = new SendProviderRestrictionData()
+
+        ng_JustCreated: boolean = true
+        ng_ToDelete: boolean = false
+    }
+
 
 }

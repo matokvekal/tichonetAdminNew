@@ -126,12 +126,18 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             income = income == null ? scheds : income.Concat(scheds);
             return income;
         }
-
+        
+        bool _resultsSaved;
         public void SaveResultsToDB (IEnumerable<BatchCreationResult> results) {
-            //TODO HANDLE DOUBLE-SAVE
-            Logic.AddRange(results.Select(x => x.Batch));
-            Logic.AddRange(results.SelectMany(x => x.Messages));
-            Logic.AddRange(results.SelectMany(x => x.SendQueue));
+            if (_resultsSaved)
+                throw new InvalidOperationException("Attemption to save results in Manager that already has saved results. Each instance of BatchCreationManager allows saving only one time.");
+            _resultsSaved = true;
+            var Msgs = results.SelectMany(x => x.Messages);
+            if (Msgs.Any()) {
+                Logic.AddRange(results.Select(x => x.Batch));
+                Logic.AddRange(Msgs);
+                Logic.AddRange(results.SelectMany(x => x.SendQueue));
+            }
             if (_MakeTimeStamp)
                 WriteEndDate(periodEnd);
         }

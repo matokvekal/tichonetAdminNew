@@ -24,6 +24,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             var batch = Manager.Logic.Create<tblMessageBatch>();
             batch.CreatedOn = DateTime.Now;
             batch.tblMessageSchedule = schedule;
+            batch.IsSms = schedule.IsSms;
 
             var dataCollector = new MessageDataCollector(Manager);
             var msgData = dataCollector.Collect(schedule);

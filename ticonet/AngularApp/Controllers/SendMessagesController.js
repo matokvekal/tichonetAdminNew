@@ -22,8 +22,8 @@ var AngularApp;
             }
             return SendMessagesVA;
         }());
-        var GridSettingsManager = (function () {
-            function GridSettingsManager(RepeatModes, DateOperators) {
+        var GridSettingsManager_proto = (function () {
+            function GridSettingsManager_proto(RepeatModes, DateOperators) {
                 var _this = this;
                 //-------
                 this.ClearSettings = function () {
@@ -59,7 +59,7 @@ var AngularApp;
                 this.dateoperators = DateOperators.concat("");
                 this.ClearSettings();
             }
-            return GridSettingsManager;
+            return GridSettingsManager_proto;
         }());
         var SendMessagesController = (function (_super) {
             __extends(SendMessagesController, _super);
@@ -177,7 +177,10 @@ var AngularApp;
                     _this.fetchtoarr(true, { urlalias: "getreservedcards", onSucces: callback }, _this.va.wildcards, false);
                 };
                 this.hasRecepient = function (rc) {
-                    return _this.va.cursched.ChoosenReccards.any(function (x) { return x === rc.Id; });
+                    var item = _this.va.cursched;
+                    if (AngularApp.IsNullOrUndefined(item.ChoosenReccards))
+                        item.ChoosenReccards = [];
+                    return item.ChoosenReccards.any(function (x) { return x === rc.Id; });
                 };
                 this.switchRecepient = function (rc) {
                     var has = _this.hasRecepient(rc);
@@ -276,7 +279,7 @@ var AngularApp;
                 this.initUrlModuleFromRowObj(data.urls);
                 // Grid Manager Init
                 var CreateGridManagerAndFetchSchedules = new AngularApp.ConcurentRequestHandler(function () {
-                    _this.va.gridSettings = new GridSettingsManager(_this.va.repeatmodes, dateOperators.select(function (x) { return x.SQLString; }));
+                    _this.va.gridSettings = new GridSettingsManager_proto(_this.va.repeatmodes, dateOperators.select(function (x) { return x.SQLString; }));
                     _this.refetchSchedules();
                 }, true);
                 var dateOperators = [];
@@ -296,4 +299,3 @@ var AngularApp;
         Controllers.SendMessagesController = SendMessagesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SendMessagesController.js.map

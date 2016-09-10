@@ -158,8 +158,8 @@
 
         ::-webkit-scrollbar
         {
-          width: 6px;  /* for vertical scrollbars */
-          height: 6px; /* for horizontal scrollbars */
+          width: 9px;  /* for vertical scrollbars */
+          height: 9px; /* for horizontal scrollbars */
         }
 
         ::-webkit-scrollbar-track
@@ -589,6 +589,51 @@
         .row {
             margin-left:initial;
             margin-right:initial
+        }
 
+        /***/
+
+        .slideable-container{
+            overflow-x:hidden
+        }
+        .slideable{
+            transition: all ease /*cubic-bezier(0.6, 0.03, 0.77, 1.3)*/ 0.7s
+        }
+        
+        .slideable.ng-leave.ng-leave-active{
+            left: -10%;
+            opacity: 0;
+            width: 100%;
+            position: absolute
+        }
+
+        .slideable.ng-enter{
+            left: -10%;
+            opacity: 0;
+            position: absolute
+        }
+
+        .slideable.ng-leave,
+        .slideable.ng-enter.ng-enter-active{
+            left: 100px;
+            opacity: 1;
+        }
+
+
+
+        .sched-grid-row{
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        .sched-grid-row > div {
+            padding: 0 5px
+        }
+
+
+        .grid-settings-box{
+            padding: 10px;
+            border: 1px solid #262d31;
+            margin: 17px 0;
+            box-shadow: 0 0 7px 0 rgba(29, 29, 29, 0.6) inset;
         }
 

@@ -48,11 +48,28 @@
         }
     }
 
+    export function HandleRequestCallBacks(data: IRequestArgs) {
+        if (IsNullOrUndefined(data))
+            return
+        if (IsConcurentRequestHandler(data.onSucces))
+            (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
+        if (IsConcurentRequestHandler(data.onFailed))
+            (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+    }
+
+    export function HandleCallBacks(onSucces?: ((response?) => void) | ConcurentRequestHandler,
+            onFailed?: ((response?) => void) | ConcurentRequestHandler) {
+        if (IsConcurentRequestHandler(onSucces))
+            (onSucces as ConcurentRequestHandler).RegisterRequestStart()
+        if (IsConcurentRequestHandler(onFailed))
+            (onFailed as ConcurentRequestHandler).RegisterRequestStart()
+    }
+
     function IsConcurentRequestHandler(cb) {
         return !(IsNullOrUndefined(cb) || IsNullOrUndefined(cb.TryCall))
     }
 
-    function RunCallbackOrHandler(callback: ((response?) => void) | ConcurentRequestHandler, response) {
+    export function RunCallbackOrHandler(callback: ((response?) => void) | ConcurentRequestHandler, response) {
         //argument type check
         if (IsNullOrUndefined(callback)) return
         let cb = callback as any
@@ -86,7 +103,14 @@
         }
     }
 
-    export abstract class Controller<TViewAgent> {
+    export interface IAjaxMaker {
+        FetchToArr:
+            (holdTillResponse: boolean, data: IRequestArgs, container: any[], clearContainer?: boolean) => void
+        Request:
+            (holdTillResponse: boolean, data: IRequestArgs) => void
+    }
+
+    export abstract class Controller<TViewAgent> implements IAjaxMaker {
         abstract init (data: any): void
         abstract buildVa(): TViewAgent
 
@@ -162,11 +186,7 @@
         protected request_msgHandlerFail: (msg: string) => void = null
 
         protected request = (holdTillResponse: boolean, data: IRequestArgs) => {
-            if (IsConcurentRequestHandler(data.onSucces))
-                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
-            if (IsConcurentRequestHandler(data.onFailed))
-                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
-
+            HandleRequestCallBacks(data)
             if (holdTillResponse)
                 this.turnHoldView(true)
             fnc.F(data.before)
@@ -201,11 +221,7 @@
             keyValueSelector: (obj: any) => col.IKeyValuePair<string, V>,
             clearContainer?: boolean) =>
         {
-            if (IsConcurentRequestHandler(data.onSucces))
-                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
-            if (IsConcurentRequestHandler(data.onFailed))
-                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
-
+            HandleRequestCallBacks(data)
             let successCB = data.onSucces
             data = CloneRequestArgs(data)
             data.onSucces = (response) => {
@@ -220,11 +236,7 @@
         protected fetchtoarr =
         (holdTillResponse: boolean, data: IRequestArgs, container: any[], clearContainer?: boolean) =>
         {
-            if (IsConcurentRequestHandler(data.onSucces))
-                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
-            if (IsConcurentRequestHandler(data.onFailed))
-                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
-
+            HandleRequestCallBacks(data)
             let successCB = data.onSucces
             data = CloneRequestArgs(data)
             data.onSucces = (response) => {
@@ -239,10 +251,7 @@
         protected updatetoarr =
         (holdTillResponse: boolean, data: IRequestArgs, container: any[], equalityPredicate: (o1, o2) => boolean, pushnew: boolean = true) =>
         {
-            if (IsConcurentRequestHandler(data.onSucces))
-                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
-            if (IsConcurentRequestHandler(data.onFailed))
-                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+            HandleRequestCallBacks(data)
             let successCB = data.onSucces
             data = CloneRequestArgs(data)
             data.onSucces = (response) => {
@@ -265,6 +274,9 @@
             }
             this.request(holdTillResponse, data)
         }
+
+        FetchToArr = this.fetchtoarr
+        Request = this.request
     }
 
 

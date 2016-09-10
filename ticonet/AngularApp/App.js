@@ -6,6 +6,7 @@ var AngularApp;
     App.controller('MFiltersController', AngularApp.Controllers.MFiltersController);
     App.controller('TemplatesController', AngularApp.Controllers.TemplatesController);
     App.controller('SendMessagesController', AngularApp.Controllers.SendMessagesController);
+    App.controller('ReportsController', AngularApp.Controllers.ReportsController);
     //todo move to directives
     //DRAG-N-DROP directives
     App.directive('draggable', function () {
@@ -72,4 +73,3 @@ var AngularApp;
         };
     });
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=App.js.map

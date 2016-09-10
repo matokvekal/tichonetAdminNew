@@ -80,12 +80,13 @@ namespace Business_Logic.MessagesModule {
         public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IEnumerable<IQueryFilter> filters, out int countWithoutTake, IQueryable<TEntity> baseQuery = null)
         where TEntity : class, IMessagesModuleEntity {
 
-            var query = GetFilteredQueryable<TEntity>(filters, baseQuery);
+            var query = GetFilteredQueryable(filters, baseQuery);
             countWithoutTake = query.Count();
+            query = query.OrderBy(x => x.Id);
             if (Skip != null)
-                query.Skip(Skip.Value);
+                query = query.Skip(Skip.Value);
             if (Take != null)
-                query.Take(Take.Value);
+                query = query.Take(Take.Value);
             return query.ToList();
         }
 
@@ -258,13 +259,17 @@ namespace Business_Logic.MessagesModule {
             }
         }
 
-        Type dateNullableType = typeof(DateTime?);
-        Type dateType = typeof(DateTime);
+        static Dictionary<Type, Func<object, object>> ExtendedCoercions = new Dictionary<Type, Func<object, object>> {
+            { typeof(DateTime?),(x) => DateTime.SpecifyKind(DateTime.Parse(x.ToString()), DateTimeKind.Utc) },
+            { typeof(DateTime),(x) => DateTime.SpecifyKind(DateTime.Parse(x.ToString()), DateTimeKind.Utc) },
+            { typeof(Guid?),(x) => { try{ return Guid.Parse(x.ToString()); } catch {return null; } } },
+            { typeof(Guid), (x) => Guid.Parse(x.ToString()) }
+        };
 
-        object ValidateToType(object val, Type type) {
-            //date time for some reason comes here as string....
-            if (type == dateType || type == dateNullableType)
-                return DateTime.SpecifyKind( DateTime.Parse(val.ToString()), DateTimeKind.Utc );
+        static object ValidateToType(object val, Type type) {
+            Func<object, object> coercion;
+            if (ExtendedCoercions.TryGetValue(type, out coercion))
+                return coercion(val);
             return val;
         }
 

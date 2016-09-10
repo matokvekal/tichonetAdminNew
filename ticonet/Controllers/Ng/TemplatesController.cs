@@ -59,12 +59,6 @@ namespace ticonet.Controllers.Ng{
             return NgResult.Succes(models.Count() + " templates was modified");
         }
 
-        string ToStringSafe(object obj){
-            if (obj == null)
-                return "";
-            return obj.ToString();
-        }
-
         public JsonResult MockMessage (int templateId, int? MaxCount) {
             using (var l = new MessagesModuleLogic()) {
                 var tmpl = l.Get<tblTemplate>(templateId);

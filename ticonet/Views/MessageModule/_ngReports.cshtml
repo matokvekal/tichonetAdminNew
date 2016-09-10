@@ -1,5 +1,99 @@
 ﻿@using DEBS = Business_Logic.DictExpressionBuilderSystem
 
-<div>
+<div ng-controller="ReportsController"
+     data-ng-init="init({
+        urls: {
+            getbatches: '@Url.Action("Fetch","BatchReports")',
+            getmessages: '@Url.Action("Fetch","MessageReports")',
+        }
+    })">
+
+    <div class="clearfix slideable-container"><!-- Slideables Container  -->
+        <div>
+            <div class="txt-c-gr txt-s-med">
+                Batches
+                <!-- Pagination  -->
+                <span class="txt-anim hover-highlight clickable txt-c-gr"
+                    ng-disabled="va.batches.CurStartNum()===1" ng-click="va.batches.Reset().Refetch()">
+                    <i class="glyphicon glyphicon-fast-backward"></i>
+                </span>
+                <span class="txt-anim hover-highlight clickable txt-c-gr"
+                    ng-disabled="!va.batches.IsPrevPage()" ng-click="va.batches.Prev().Refetch()">
+                    <i class="glyphicon glyphicon-backward"></i>
+                </span>
+                <span class="txt-anim hover-highlight clickable txt-c-gr"
+                    ng-disabled="!va.batches.IsNextPage()" ng-click="va.batches.Next().Refetch()">
+                    <i class="glyphicon glyphicon-forward"></i>
+                </span>
+            </div>
+            <div class="txt-c-grmore txt-s-small">
+                shown from {{va.batches.CurStartNum()}} to {{va.batches.CurEndNum()}}, all: {{va.batches.MaxQuery}}
+            </div>
+        </div>
+        <!-- Grid/Enumeration Settings -->
+        <div class="grid-settings-box col-xs-12 clearfix txt-c-gr">
+            <div class="col-xs-1">
+                <div class="txt-anim hover-highlight clickable txt-c-gr"
+                     ng-click="va.batches.Settings.IsSms=!va.batches.Settings.IsSms; va.batches.Reset().RefetchDelayed(500)">
+                    <i ng-class="va.batches.Settings.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                       class="glyphicon"></i>
+                    <span>
+                        @DEBS.Translate("MessageModule.sms")
+                    </span>
+                </div>
+                <div class="txt-anim hover-highlight clickable txt-c-gr"
+                     ng-click="va.batches.Settings.IsEmail=!va.batches.Settings.IsEmail; va.batches.Reset().RefetchDelayed(500)">
+                    <i ng-class="va.batches.Settings.IsEmail ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                       class="glyphicon"></i>
+                    <span>
+                        @DEBS.Translate("MessageModule.mail")
+                    </span>
+                </div>
+            </div>
+
+        </div>
+        <!-- Batches Grid/Enumeration -->
+        <div class="slideable" ng-if="va.curbatch===null">
+            <div class="txt-c-gr txt-s-med" ng-if="!va.batches.Any()">
+                There are no items
+            </div>
+            <div ng-repeat="batch in va.batches.Items" class="ngan-fade-mid">
+                <div class="sched-grid-row row">
+                    <div class="col-xs-2">
+                        <span ng-class="batch.Errors===null ? 'txt-c-green' : 'txt-c-red'">
+                            <i class="glyphicon padd-hor-t"
+                               ng-class="batch.IsSms ? 'glyphicon-comment' : 'glyphicon-envelope'"></i>
+                            <i class="glyphicon padd-hor-t"
+                               ng-class="batch.FinishedOn===null ? 'glyphicon-send' : 'glyphicon-flag'"></i>
+                        </span>
+                        <span class="txt-c-grmore">
+                            id:{{batch.Id}}
+                        </span>
+                    </div>
+                    <div class="col-xs-2">
+                        {{batch.BaseScheduleName}}
+                    </div>
+                    <div class="col-xs-2">
+                        {{batch.CreatedOn | date:'medium'}}
+                    </div>
+                    <div class="col-xs-2">
+                        {{batch.FinishedOn | date:'medium'}}
+                    </div>
+                    <div class="col-xs-2">
+                        {{batch.MessagesCount}}
+                    </div>
+                    <div class="col-xs-2">
+                        {{batch.Errors}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Grid/Enumeration -->
+        <div class="slideable" ng-if="va.curbatch!==null">
+
+        </div>
+
+    </div>
 
 </div>

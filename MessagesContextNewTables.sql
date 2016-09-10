@@ -94,6 +94,7 @@ CREATE TABLE [dbo].[tblMessageBatch] (
 	[CreatedOn]		DATETIME NULL,
 	[FinishedOn]	DATETIME NULL,
 	[Errors]		NVARCHAR (MAX) NULL,
+	[IsSms]			bit		NOT NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
