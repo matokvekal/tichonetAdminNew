@@ -17,8 +17,8 @@ namespace ticonet
         private static readonly ILog logger = LogManager.GetLogger(typeof(StudentsController));
 
 
-        
-         
+
+
         [ActionName("StudentsForMap")]
         public List<StudentShortInfo> GetStudentsForMap()
         {
@@ -40,7 +40,7 @@ namespace ticonet
                     Shicva = data.Shicva,
                     Class = data.@class,
                     Active = data.Active ?? false,
-                    SchoolName=data.schoolName
+                    SchoolName = data.schoolName
                 }).ToList();
             }
             return res;
@@ -109,7 +109,7 @@ namespace ticonet
                         City = st.city,
                         CityId = st.cityId ?? 0,
                         Street = st.street,
-                        StreetId = st.streetId??0,
+                        StreetId = st.streetId ?? 0,
                         HouseNumber = st.houseNumber,
                         Confirm = st.registrationStatus
                     };
@@ -119,9 +119,15 @@ namespace ticonet
         }
 
         [ActionName("Address")]
-        public StudentShortInfo PostAddress(StudentAddressViewModel data)
+        public AttachStudentResultModel PostAddress(StudentAddressViewModel data)
         {
-            StudentShortInfo res = null;
+            var res = new AttachStudentResultModel
+            {
+                Done = false,
+                Lines = new List<LineModel>(),
+                Stations = new List<StationModel>()
+
+            };
             try
             {
                 using (var logic = new tblStudentLogic())
@@ -137,22 +143,27 @@ namespace ticonet
                             st.streetId = data.StreetId;
                             st.city = data.City;
                             st.cityId = data.CityId;
+                            st.houseNumber = data.HouseNumber;
                             st.Lat = null;
                             st.Lng = null;
                             tblStudentLogic.update(st);
-                            logic.RemoveStudentFromAllStations(st.pk);
-                            res = new StudentShortInfo(st);
-                        }else
-                        {
-                            //nothing chanhges
+
+                            //disconnect from all lines
+                            var detachResult = logic.RemoveStudentFromAllStations(st.pk);
+                            res.Student = new StudentShortInfo(st);
+
+                            res.Stations = detachResult.Stations.Select(d => new StationModel(d)).ToList();
+                            res.Lines = detachResult.Lines.Select(d => new LineModel(d)).ToList();
+
+                            res.Done = true;
                         }
                     }
                 }
-               
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                res = null;
+                res.Done = false;
             }
             return res;
         }

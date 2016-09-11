@@ -77,6 +77,7 @@
     <Compile Include="Dtos\LinePeriodStatisticDto.cs" />
     <Compile Include="Dtos\LinesDatedTotalStatisticDto.cs" />
     <Compile Include="Dtos\LinesTotalStatisticDto.cs" />
+    <Compile Include="Entities\DetachResultInfo.cs" />
     <Compile Include="Entities\GenerateScheduleParamsModel.cs" />
     <Compile Include="Entities\LoginInfo.cs" />
     <Compile Include="Entities\SaveDurationsModel.cs" />

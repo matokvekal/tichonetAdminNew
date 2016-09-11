@@ -145,9 +145,12 @@
         var res = [];
         for (var i = 0; i < smap.lines.list.length; i++) {
             var line = smap.lines.list[i];
-            for (var j = 0; j < line.Stations.length; j++) {
-                if (line.Stations[j].StationId == stationId) res.push(line);
+            if (line.Stations) {
+                for (var j = 0; j < line.Stations.length; j++) {
+                    if (line.Stations[j].StationId == stationId) res.push(line);
+                }
             }
+
         }
         return res;
     },
@@ -313,8 +316,8 @@
                             for (var i in loader.Data.Station.Students) {
                                 smap.checkDistanceStudents.push(loader.Data.Station.Students[i].StudentId);
                             }
-                            smap.checkDistanceStation = loader.Data.Station;                         
-                          
+                            smap.checkDistanceStation = loader.Data.Station;
+
                             smap.updateDistance();
                         });
                 },
@@ -537,7 +540,7 @@
             if (lines.indexOf(l) == -1) {
                 var t = "<option value='" + l.Id + "' ";
                 if (l.Id == smap.stations.latestLineId) t += "selected='selected'";
-                t += ">" + l.Name + "  " + l.LineNumber +"</option>";
+                t += ">" + l.Name + "  " + l.LineNumber + "</option>";
                 $(t).appendTo("#ddlAddLine");
             }
         }
@@ -563,7 +566,7 @@
                     smap.stations.latestLineId = $("#ddlAddLine").val();
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
-                       
+
                         dialog.dialog("close");
                         smap.restoryWays(loader.Line);
                         smap.lines.updateLine(loader.Line, true);
