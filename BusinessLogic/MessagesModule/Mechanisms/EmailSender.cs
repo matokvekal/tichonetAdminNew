@@ -34,26 +34,30 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         }
 
         void SendEmail(IEmailMessage msg, IEmailServiceProvider provider, SmtpClient smtp) {
+            try
+            {
+                string displayName = !string.IsNullOrWhiteSpace(msg.RecepientName) ? msg.RecepientName : string.Empty;
+                var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
 
-            //var toAddress = new MailAddress("test@test.com", msg.RecepientName);
-            var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
-
-            StringBuilder msgBody = new StringBuilder();
-            msgBody.Append("<body style=\"direction:rtl;font-family:Arial\">");
-            msgBody.Append(msg.Body);
-            msgBody.Append("</body>");
-            using (var message = new MailMessage(provider.FromEmailAddress, toAddress) {
-                    Subject = msg.Subject,
-                    Body = msgBody.ToString(),
-                    IsBodyHtml = msg.IsBodyHtml
-                })
-                try {
-                    smtp.Send(message);
-                    msg.SendDate = DateTime.Now;
-                }
-                catch (SmtpException e) {
-                    msg.AddError("SmtpException: " + e.Message); 
-                }
+                StringBuilder msgBody = new StringBuilder();
+                msgBody.Append("<body style=\"direction:rtl;font-family:Arial\">");
+                msgBody.Append(msg.Body);
+                msgBody.Append("</body>");
+                    using (var message = new MailMessage(provider.FromEmailAddress, toAddress)
+                    {
+                        Subject = msg.Subject,
+                        Body = msgBody.ToString(),
+                        IsBodyHtml = msg.IsBodyHtml
+                    })
+                    {
+                        smtp.Send(message);
+                        msg.SendDate = DateTime.Now;
+                    }
+            }
+            catch (SmtpException e)
+            {
+                msg.AddError("SmtpException: " + e.Message);
+            }
         }
 
         void OpenSmptAndDO(IEmailServiceProvider provider, Action<SmtpClient> action) {
