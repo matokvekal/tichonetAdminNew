@@ -33,10 +33,10 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         public IEnumerable< MessageProductionData > Collect (IMessageTemplate templ) {
             var output = new List<MessageProductionData>();
             //Migrate all needed data to memory, because it will be intensive processed
-            var filters = templ.Filters.ToArray();
-            var wildcards = templ.Wildcards.ToArray();
-            var recepients = templ.Recepients.ToArray();
-            var userInputedValues = templ.FilterValueContainers.ToArray();
+            var filters = templ.Filters!=null ? templ.Filters.ToArray() : new tblFilter[] { };
+            var wildcards = templ.Wildcards!=null ? templ.Wildcards.ToArray() : new tblWildcard[] { };
+            var recepients = templ.Recepients!=null ? templ.Recepients.ToArray(): new tblRecepientCard[] { };
+            var userInputedValues = templ.FilterValueContainers!=null ? templ.FilterValueContainers.ToArray() : new FilterValueContainer[] { };
 
             Dictionary<int, ValueOperatorPair[]> filtsToValOps = GetFiltersActualSettings(filters, userInputedValues);
 

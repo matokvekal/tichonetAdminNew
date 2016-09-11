@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Business_Logic.MessagesModule.EntitiesExtensions;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
@@ -16,19 +17,19 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         void SendSingle(TMessage message, TSendServiceProvider provider); 
     }
 
-    public class EmailSender : BatchSendingComponent, IMessageSender<IEmailServiceProvider,IEmailMessage> {
+    public class EmailSender : BatchSendingComponent, IMessageSender<IEmailServiceProvider, IEmailMessage> {
 
         public EmailSender(BatchSendingManager manager) : base(manager) {
         }
 
-        public void SendBatch (IEnumerable<IEmailMessage> messages, IEmailServiceProvider provider) {
+        public void SendBatch(IEnumerable<IEmailMessage> messages, IEmailServiceProvider provider) {
             OpenSmptAndDO(provider, smtp => {
                 foreach (var msg in messages)
                     SendEmail(msg, provider, smtp);
             });
         }
 
-        public void SendSingle (IEmailMessage msg, IEmailServiceProvider provider) {
+        public void SendSingle(IEmailMessage msg, IEmailServiceProvider provider) {
             OpenSmptAndDO(provider, smtp => SendEmail(msg, provider, smtp));
         }
 
@@ -37,11 +38,15 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             //var toAddress = new MailAddress("test@test.com", msg.RecepientName);
             var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
 
+            StringBuilder msgBody = new StringBuilder();
+            msgBody.Append("<body style=\"direction:rtl;font-family:Arial\">");
+            msgBody.Append(msg.Body);
+            msgBody.Append("</body>");
             using (var message = new MailMessage(provider.FromEmailAddress, toAddress) {
-                Subject = msg.Subject,
-                Body = msg.Body,
-                IsBodyHtml = msg.IsBodyHtml // still text
-            })
+                    Subject = msg.Subject,
+                    Body = msgBody.ToString(),
+                    IsBodyHtml = msg.IsBodyHtml
+                })
                 try {
                     smtp.Send(message);
                     msg.SendDate = DateTime.Now;
