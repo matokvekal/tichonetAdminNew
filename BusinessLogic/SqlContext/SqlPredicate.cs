@@ -77,8 +77,9 @@ namespace Business_Logic.SqlContext {
         public string ToSqlString () {
             StringBuilder output = new StringBuilder();
             if (predicateType == ptype.body) {
+                output.Append(" [");
                 output.Append(Key);
-                output.Append(" ");
+                output.Append("] ");
                 output.Append(op.SQLString);
                 output.Append(" ");
                 output.Append(SqlType.NetObjectToSqlQueryFormat(type,value));
