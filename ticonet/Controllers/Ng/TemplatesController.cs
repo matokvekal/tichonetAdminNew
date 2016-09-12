@@ -8,6 +8,7 @@ using Ninject;
 using Business_Logic.SqlContext;
 using Business_Logic.MessagesModule.Mechanisms;
 using Business_Logic.MessagesModule.DataObjects;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
 namespace ticonet.Controllers.Ng{
 
@@ -28,7 +29,7 @@ namespace ticonet.Controllers.Ng{
                     l.Add(item);
                 }
             }
-            return NgResult.Succes(models.Count() + " new templates was added");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} new templates was added", models.Count()));
         }
 
         protected override NgResult _delete(TemplateVM[] models) {
@@ -37,7 +38,7 @@ namespace ticonet.Controllers.Ng{
                     l.Delete<tblTemplate>(model.Id);
                 }
             }
-            return NgResult.Succes(models.Count() + " templates was removed");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} templates was removed", models.Count()));
         }
 
         protected override FetchResult<TemplateVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
@@ -56,14 +57,14 @@ namespace ticonet.Controllers.Ng{
                     l.SaveChanges(item);
                 }
             }
-            return NgResult.Succes(models.Count() + " templates was modified");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} templates was modified", models.Count()));
         }
 
         public JsonResult MockMessage (int templateId, int? MaxCount) {
             using (var l = new MessagesModuleLogic()) {
                 var tmpl = l.Get<tblTemplate>(templateId);
                 if (tmpl == null)
-                    return NgResultToJsonResult(NgResult.Fail("Server Error: cannot find template, try save it and re-open."));
+                    return NgResultToJsonResult(NgResult.Fail(DEBS.Translate("MessageMdl.Server Error: cannot find template, try save it and re-open.")));
 
                 var items = TASK_PROTOTYPE.GetDemoMessages(l,tmpl,sqllogic,tmpl.IsSms, MaxCount ?? 0);
                 return NgResultToJsonResult(FetchResult<Message>.Succes(items, items.Count));

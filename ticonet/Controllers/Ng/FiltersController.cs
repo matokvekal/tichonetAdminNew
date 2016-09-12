@@ -8,6 +8,8 @@ using ticonet.Controllers.Ng.ViewModels;
 using ticonet.ParentControllers;
 using Ninject;
 using Business_Logic.SqlContext;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
+
 
 namespace ticonet.Controllers.Ng {
 
@@ -45,7 +47,7 @@ namespace ticonet.Controllers.Ng {
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult GetOperatorsForType(string typename) {
             if (string.IsNullOrWhiteSpace(typename))
-                return NgResultToJsonResult(NgResult.Fail("Typename is undefined"));
+                return NgResultToJsonResult(NgResult.Fail(@DEBS.Translate("MessageModule.Typename is undefined")));
             var items = SqlOperator.GetAllowedForSqlType(typename);
             return NgResultToJsonResult(FetchResult<SqlOperator>.Succes(items, items.Count()));
         }
