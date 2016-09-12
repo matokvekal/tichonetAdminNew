@@ -1,6 +1,7 @@
 ﻿using Business_Logic.MessagesModule;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
 namespace ticonet.ParentControllers {
 
@@ -76,7 +77,7 @@ namespace ticonet.ParentControllers {
                     result = _delete(models);
                     break;
                 default:
-                    result = NgResult.Fail("Undefined Manage mode: " + mode);
+                    result = NgResult.Fail(DEBS.Translate("MessageMdl.Undefined Manage mode: {0}", mode));
                     break;
             }
             return NgResultToJsonResult(result);
