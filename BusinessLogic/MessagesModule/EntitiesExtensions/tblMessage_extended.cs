@@ -34,7 +34,7 @@ namespace Business_Logic.MessagesModule {
 
         bool IEmailMessage.IsBodyHtml {
             get {
-                return false;
+                return true;
             }
         }
 
