@@ -55,7 +55,8 @@ var AngularApp;
                 var cb = function (r) {
                     _this.MaxQuery = r.data.allquerycount;
                     _this.Items.splice(0, _this.Items.length);
-                    r.data.items.forEach(function (x) { return _this.Items.push(_this._marshaller(x)); });
+                    var count = r.data.items.length;
+                    r.data.items.forEach(function (x) { return _this._fetchhandler(_this._marshaller(x), _this.Items, count, _this.MaxQuery); });
                     AngularApp.RunCallbackOrHandler(onSucces, r);
                 };
                 var params = new AngularApp.FetchParams()
@@ -97,6 +98,10 @@ var AngularApp;
                 _this._marshaller = func;
                 return _this;
             };
+            this.FetchHandler = function (func) {
+                _this._fetchhandler = func;
+                return _this;
+            };
             this.DefaultPagination = function (itemsForPage) {
                 _this._pagination = itemsForPage || null;
                 return _this;
@@ -111,6 +116,7 @@ var AngularApp;
             };
             this._pagination = null;
             this._marshaller = function (x) { return x; };
+            this._fetchhandler = function (i, cont) { return cont.push(i); };
             this.Take = null;
             this.Skip = null;
             this.MaxQuery = 0;

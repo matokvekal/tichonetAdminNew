@@ -199,14 +199,16 @@ var AngularApp;
                 };
                 _this.request(holdTillResponse, data);
             };
-            /**looks on response.data.items*/
-            this.updatetoarr = function (holdTillResponse, data, container, equalityPredicate, pushnew) {
+            /**looks on response.data.items
+            if no 'updater' function specified, matching items will be changed in container
+            */
+            this.updatetoarr = function (holdTillResponse, data, container, equalityPredicate, pushnew, updater) {
                 if (pushnew === void 0) { pushnew = true; }
                 HandleRequestCallBacks(data);
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
+                var useUpdater = !AngularApp.IsNullOrUndefined(updater);
                 data.onSucces = function (response) {
-                    //if (response.data.items) {
                     response.data.items.forEach(function (e1) {
                         var index = -1;
                         for (var i = 0; i < container.length; i++) {
@@ -215,12 +217,15 @@ var AngularApp;
                                 break;
                             }
                         }
-                        if (index != -1)
-                            container[index] = e1;
+                        if (index != -1) {
+                            if (useUpdater)
+                                updater(container[index], e1);
+                            else
+                                container[index] = e1;
+                        }
                         else if (pushnew)
                             container.push(e1);
                     });
-                    //}
                     RunCallbackOrHandler(successCB, response);
                 };
                 _this.request(holdTillResponse, data);

@@ -247,29 +247,39 @@
             this.request(holdTillResponse,data)
         }
 
-        /**looks on response.data.items*/
+        /**looks on response.data.items
+        if no 'updater' function specified, matching items will be changed in container
+        */
         protected updatetoarr =
-        (holdTillResponse: boolean, data: IRequestArgs, container: any[], equalityPredicate: (o1, o2) => boolean, pushnew: boolean = true) =>
+        <T>(holdTillResponse: boolean,
+            data: IRequestArgs, container: T[],
+            equalityPredicate: (o1: T, o2: T) => boolean,
+            pushnew: boolean = true,
+            updater?: (exsisting: T, fetched: T) => void) =>
         {
             HandleRequestCallBacks(data)
+
             let successCB = data.onSucces
             data = CloneRequestArgs(data)
+            let useUpdater = !IsNullOrUndefined(updater)
             data.onSucces = (response) => {
-                //if (response.data.items) {
-                    response.data.items.forEach((e1) => {
-                        let index = -1
-                        for (let i = 0; i < container.length; i++) {
-                            if (equalityPredicate(e1, container[i])) {
-                                index = i
-                                break
-                            }
+                response.data.items.forEach((e1) => {
+                    let index = -1
+                    for (let i = 0; i < container.length; i++) {
+                        if (equalityPredicate(e1, container[i])) {
+                            index = i
+                            break
                         }
-                        if (index != -1)
+                    }
+                    if (index != -1) {
+                        if (useUpdater)
+                            updater(container[index], e1)
+                        else
                             container[index] = e1
-                        else if (pushnew)
-                            container.push(e1)
-                    })
-                //}
+                    }
+                    else if (pushnew)
+                        container.push(e1)
+                })
                 RunCallbackOrHandler(successCB, response)
             }
             this.request(holdTillResponse, data)
