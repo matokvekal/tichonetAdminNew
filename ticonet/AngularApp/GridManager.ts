@@ -20,13 +20,13 @@
 
         Next = (skip?: number, take?: number) => {
             this.Skip = (this.Skip || 0) + (skip || this._pagination)
-            this.Take = (take || this._pagination) 
+            this.Take = (take || this._pagination)
             return this;
         }
 
         Prev = (skip?: number, take?: number) => {
             this.Skip = (this.Skip || 0) - (skip || this._pagination)
-            this.Take = (take || this._pagination) 
+            this.Take = (take || this._pagination)
             if (this.Skip < 0) this.Skip = 0
             return this;
         }
@@ -48,13 +48,13 @@
             onFailed?: ((response?) => void) | ConcurentRequestHandler) => {
 
             let args = this.BuildRequestArgs(onSucces, onFailed)
-            this.Fetcher.Request(!background,args)
+            this.Fetcher.Request(!background, args)
         }
 
         RefetchDelayed = (delayMilisecs: number, background?: boolean, onSucces?: ((response?) => void) | ConcurentRequestHandler,
             onFailed?: ((response?) => void) | ConcurentRequestHandler) => {
 
-            this.Refetch(background,onSucces,onFailed)
+            this.Refetch(background, onSucces, onFailed)
         }
 
         protected BuildRequestArgs = (onSucces?: ((response?) => void) | ConcurentRequestHandler,
@@ -71,9 +71,11 @@
             let cb = (r) => {
                 this.MaxQuery = r.data.allquerycount
                 this.Items.splice(0, this.Items.length)
-                r.data.items.forEach(x => this.Items.push(this._marshaller( x )))
 
-                RunCallbackOrHandler(onSucces,r)
+                let count = r.data.items.length
+                r.data.items.forEach(x => this._fetchhandler(this._marshaller(x), this.Items, count, this.MaxQuery))
+
+                RunCallbackOrHandler(onSucces, r)
             }
 
             let params = new FetchParams()
@@ -82,7 +84,7 @@
 
             this._settings.iter((k, v) => {
                 let val = this.Settings[k]
-                if (v.Predicate(val,this.Settings))
+                if (v.Predicate(val, this.Settings))
                     v.ParamMaker(params, val)
             })
 
@@ -109,7 +111,7 @@
                 Name: Name,
                 Default: Default,
                 ParamMaker: ParamMaker,
-                Predicate: Predicate || ( (x) => typeof x !== 'undefined' )
+                Predicate: Predicate || ((x) => typeof x !== 'undefined')
             })
 
             return this
@@ -122,6 +124,11 @@
 
         Marshaller = (func: (item: TModel) => TModel) => {
             this._marshaller = func
+            return this
+        }
+
+        FetchHandler = (func: (marshaledItem: TModel, container: TModel[], itemsCount?: number, allQueryCount?: number) => void) => {
+            this._fetchhandler = func
             return this
         }
 
@@ -142,6 +149,9 @@
 
         protected _pagination = null
         protected _marshaller: (item: TModel) => TModel = (x) => x
+
+        protected _fetchhandler: (marshaledItem: TModel, container: TModel[], itemsCount?: number, allQueryCount?: number) => void =
+        (i, cont) => cont.push(i)
 
         protected _settings: col.IDictionary<GridSetting>
         protected Take: number = null
