@@ -6,6 +6,7 @@ using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using ticonet.Controllers.Ng.ViewModels;
@@ -41,7 +42,7 @@ namespace ticonet.Controllers.Ng {
                     l.Delete<tblMessageSchedule>(model.Id);
                 }
             }
-            return NgResult.Succes(models.Count() + " schedules was removed");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} schedules was removed", models.Count()));
         }
 
         protected override FetchResult<MessageScheduleVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
@@ -77,7 +78,7 @@ namespace ticonet.Controllers.Ng {
                     l.SaveChanges(item);
                 }
             }
-            return NgResult.Succes(models.Count() + " schedules was modified");
+            return NgResult.Succes(DEBS.Translate("MessageMdl.{0} schedules was modified", models.Count()));
         }
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
@@ -91,10 +92,12 @@ namespace ticonet.Controllers.Ng {
             using (var l = new MessagesModuleLogic()) {
                 var sched = l.Get<tblMessageSchedule>(ScheduleId);
                 if (sched == null)
-                    return NgResultToJsonResult(NgResult.Fail("Server Error: cannot find template, try save it and re-open."));
+                    return NgResultToJsonResult(NgResult.Fail(DEBS.Translate("MessageMdl.Server Error: cannot find template, try save it and re-open.")));
                 var result = TASK_PROTOTYPE.RunImmediateBatchCreation(sched, 1, sqllogic, l);
-                var msg = @"Message Batch was created and will be sended as soon as possible.
-                            It contains: " + result.Messages.Count() + " messages.";
+                var msgBuilder = new StringBuilder();
+                msgBuilder.AppendLine(DEBS.Translate("MessageMdl.Message Batch was created and will be sended as soon as possible."));
+                msgBuilder.AppendLine(DEBS.Translate("MessageMdl.It contains: {0} messages.", result.Messages.Count()));
+                var msg = msgBuilder.ToString();
                 return NgResultToJsonResult(NgResult.Succes(msg));
             }
         }

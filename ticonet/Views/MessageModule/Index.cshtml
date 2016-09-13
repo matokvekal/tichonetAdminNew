@@ -38,7 +38,7 @@
     <link href="~/Content/MessageModule_PrototypeStyles.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,300i,400,400i,700" rel="stylesheet">
 </head>
-<body>
+<body dir="rtl">
 
     <div class="main-container" ng-app="App" ng-cloak>
 
@@ -102,6 +102,11 @@
 
                 <!-- Settings Window MOCK -->
                 <div class="settings-window ngan-fade-mid txt-c-grmore" ng-if="va.showSettings">
+                    <div class="txt-s-big" align="left">
+                        <a class="asimple" ng-click="va.showSettings=!va.showSettings">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </a>
+                    </div>
                     <div class="txt-s-huge txt-c-base">
                         @DEBS.Translate("MessageModule.Settings")
                     </div>

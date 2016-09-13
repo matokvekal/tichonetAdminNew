@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -106,10 +106,21 @@ namespace Business_Logic
             }
         }
 
-        public void RemoveStudentFromAllStations(int studentPk)
+        public DetachResultInfo RemoveStudentFromAllStations(int studentPk)
         {
-            var stations = DB.StudentsToLines.Where(z => z.StudentId == studentPk);
+            var res = new DetachResultInfo();
+            var stations = DB.StudentsToLines.Where(z => z.StudentId == studentPk).ToList();
+            var stationsIds = stations.Select(s => s.StationId).Distinct().ToList();
+            var linesIds = stations.Select(s => s.LineId).Distinct().ToList();
             DB.StudentsToLines.RemoveRange(stations);
+            DB.SaveChanges();
+            using (var lineLogic = new LineLogic())
+            {
+                lineLogic.UpdateStudentCount();
+            }
+            res.Stations = DB.Stations.Where(s => stationsIds.Contains( s.Id)).ToList();
+            res.Lines = DB.Lines.Where(l =>linesIds.Contains(l.Id)).ToList();
+            return res;
         }
 
         public static void create(tblStudent c)

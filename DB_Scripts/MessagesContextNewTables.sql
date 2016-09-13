@@ -93,7 +93,8 @@ CREATE TABLE [dbo].[tblMessageBatch] (
 	[tblMessageScheduleId]			INT NOT NULL,
 	[CreatedOn]		DATETIME NULL,
 	[FinishedOn]	DATETIME NULL,
-	[Errors]		NVARCHAR NULL,
+	[Errors]		NVARCHAR (MAX) NULL,
+	[IsSms]			bit		NOT NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
@@ -106,6 +107,54 @@ CREATE TABLE [dbo].[tblMessage] (
 	[IsSms]			BIT				NOT NULL,
 	[SentOn]		DATETIME NULL,
 	[tblMessageBatchId] INT NOT NULL,
+	[ErrorLog] nvarchar (MAX),
     
 	PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+CREATE TABLE [dbo].[tblPendingMessagesQueue] (
+    [Id]           INT NOT NULL,
+    [Priority]     INT NOT NULL,
+	[Deleted]      [bit] NOT NULL CONSTRAINT [DF_tblPendingMessagesQueue_Deleted]  DEFAULT ((0)),
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([Id]) REFERENCES [dbo].[tblMessage] ([Id])
+);
+
+CREATE TABLE [dbo].[tblEmailSenderDataProvider] (
+    [Id]                   INT            IDENTITY (1, 1) NOT NULL,
+    [Name]                 NVARCHAR (150) NOT NULL,
+    [IsActive]             BIT            NOT NULL,
+    [FromEmailAddress]     NVARCHAR (MAX) NOT NULL,
+    [FromEmailDisplayName] NVARCHAR (300) NOT NULL,
+    [FromEmailPassword]    NVARCHAR (MAX) NOT NULL,
+    [SmtpHostName]         NVARCHAR (MAX) NOT NULL,
+    [SmtpPort]             INT            NOT NULL,
+    [EnableSsl]            BIT            NOT NULL,
+    [SendProviderRestrictionDataJSON] nvarchar (MAX),
+	[SendProviderRestrictionDataLogJSON] nvarchar (MAX),
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+CREATE TABLE [dbo].[tblBatchCreationManagerData] (
+    [Id]			INT				IDENTITY (1, 1) NOT NULL,
+
+	[LastStartTime] DATETIME NOT NULL,
+	[LastEndTime]	DATETIME NOT NULL,
+
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+
+);
+
+CREATE TABLE [dbo].[tblSmsSenderDataProvider] (
+    [Id]                                 INT            IDENTITY (1, 1) NOT NULL,
+    [Name]                               NVARCHAR (150) NOT NULL,
+    [IsActive]                           BIT            NOT NULL,
+	[FromDisplayName]					NVARCHAR (300) NOT NULL,
+    [FromPhoneNumber]                   NVARCHAR (300) NOT NULL,
+    [Username]							NVARCHAR (MAX) NOT NULL,
+    [Password]							NVARCHAR (MAX) NOT NULL,
+	[MessageInterval]					INT NOT NULL,
+    [SendProviderRestrictionDataJSON]    NVARCHAR (MAX) NULL,
+    [SendProviderRestrictionDataLogJSON] NVARCHAR (MAX) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
 );

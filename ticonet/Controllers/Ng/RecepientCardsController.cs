@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using ticonet.Controllers.Ng.ViewModels;
 using Business_Logic.MessagesModule;
 using ticonet.ParentControllers;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
+
 
 namespace ticonet.Controllers {
     public class RecepientCardsController : NgController<RecepientcardVM> {
@@ -34,9 +36,9 @@ namespace ticonet.Controllers {
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult GetReservedCodes() {
             var items = new List<WildcardVM>() {
-                new WildcardVM {Code = tblRecepientCard.NameCode, Name = "Recepient Name", Id=-10 },
-                new WildcardVM {Code = tblRecepientCard.EmailCode, Name = "Recepient Email",Id=-11 },
-                new WildcardVM {Code = tblRecepientCard.PhoneCode, Name = "Recepient Phone",Id=-12 }
+                new WildcardVM {Code = tblRecepientCard.NameCode, Name = DEBS.Translate("MessageMdl.Recepient Name"), Id=-10 },
+                new WildcardVM {Code = tblRecepientCard.EmailCode, Name = DEBS.Translate("MessageMdl.Recepient Email"),Id=-11 },
+                new WildcardVM {Code = tblRecepientCard.PhoneCode, Name = DEBS.Translate("MessageMdl.Recepient Phone"),Id=-12 }
             };
             return NgResultToJsonResult(FetchResult<WildcardVM>.Succes(items, items.Count));
         }

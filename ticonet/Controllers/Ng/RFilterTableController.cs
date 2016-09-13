@@ -7,6 +7,7 @@ using Business_Logic.MessagesModule;
 using Business_Logic.SqlContext;
 using System.Collections.Generic;
 using Ninject;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
 namespace ticonet.Controllers.Ng {
 
@@ -34,7 +35,7 @@ namespace ticonet.Controllers.Ng {
                     PocoConstructor.MakeFromObj(x, RFilterTableVM.tblRecepientFilterTableNamePR)
                     );
                 if (items.Count() == 0)
-                    return FetchResult<RFilterTableVM>.Fail("There is no base tables in database");
+                    return FetchResult<RFilterTableVM>.Fail(DEBS.Translate("MessageMdl.There is no base tables in database"));
                 return FetchResult<RFilterTableVM>.Succes(items, items.Count());
             }
         }
@@ -49,7 +50,7 @@ namespace ticonet.Controllers.Ng {
             using (var l = new MessagesModuleLogic()) {
                 var item = l.Get<tblRecepientFilterTableName>(id);
                 if (item == null)
-                    return NgResultToJsonResult( NgResult.Fail("There is no binded table in database with id:" + id) );
+                    return NgResultToJsonResult( NgResult.Fail(DEBS.Translate("MessageMdl.There is no binded table in database with id: {0}", id)) );
                 tablename = item.ReferncedTableName;
             }
             var data = sqlLogic.GetColomnsInfos(tablename);

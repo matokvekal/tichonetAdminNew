@@ -1162,6 +1162,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\JquerySimpleUI.js" />
     <Content Include="Scripts\Map\Map.js" />
+    <Content Include="Scripts\Map\Map.Lines.Overlay.js" />
     <Content Include="Scripts\Map\Map.LinesOld.js" />
     <Content Include="Scripts\Map\Map.Lines.js" />
     <Content Include="Scripts\markerclusterer.js" />

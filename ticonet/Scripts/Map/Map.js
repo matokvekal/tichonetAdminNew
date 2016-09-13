@@ -9,6 +9,8 @@
     graphicElements: [],
     attachGrid: null,
     init: function () {
+
+
         // getting map's center
         var latCenter = 32.086368;
         var lngCenter = 34.889135;
@@ -130,43 +132,64 @@
     },
     restoryWays: function (line) {
         var ways = $.parseJSON(unescape(line.Geometry));
+        if (!ways) return;
         for (var k in ways) {
-            ways[k].display = new google.maps.DirectionsRenderer(smap.lines.getRenderOptions(line));
-            smap.fixGeometry(ways[k].path);            
-            ways[k].display.setDirections(ways[k].path);
-            smap.lines.addDirectionChangedListener(ways[k], line);
+            if (ways.hasOwnProperty(k)) {
+                ways[k].display = new google.maps.DirectionsRenderer(smap.lines.getRenderOptions(line));
+                if (ways[k].path) {
+                    smap.fixGeometry(ways[k].path);
+                    ways[k].display.setDirections(ways[k].path);
+                    smap.lines.addDirectionChangedListener(ways[k], line);
+                }
+            }
         }
         line.ways = ways;
     },
     fixGeometry: function (g) {
+        if (!g) return;
         g.request.destination = smap.fixCoords(g.request.destination);
         g.request.origin = smap.fixCoords(g.request.origin);
-        for (var r in g.request.waypoints) {
-            g.request.waypoints[r] = smap.fixCoords(g.request.waypoints[r]);
+        var r;
+        for (r in g.request.waypoints) {
+            if (g.request.waypoints.hasOwnProperty(r)) {
+                g.request.waypoints[r] = smap.fixCoords(g.request.waypoints[r]);
+            }
         }
         var rt = g.routes[0];
-        for (var r in rt.legs) {
-            rt.legs[r].start_location = smap.fixCoords(rt.legs[r].start_location);
-            rt.legs[r].end_location = smap.fixCoords(rt.legs[r].end_location);
-            for (var s in rt.legs[r].steps) {
-                rt.legs[r].steps[s].start_location = smap.fixCoords(rt.legs[r].steps[s].start_location);
-                rt.legs[r].steps[s].end_location = smap.fixCoords(rt.legs[r].steps[s].end_location);
-                rt.legs[r].steps[s].start_point = smap.fixCoords(rt.legs[r].steps[s].start_point);
-                rt.legs[r].steps[s].end_point = smap.fixCoords(rt.legs[r].steps[s].end_point);
-                for (var l in rt.legs[r].steps[s].lat_lngs) {
-                    rt.legs[r].steps[s].lat_lngs[l] = smap.fixCoords(rt.legs[r].steps[s].lat_lngs[l]);
+        for (r in rt.legs) {
+            if (rt.legs.hasOwnProperty(r)) {
+                rt.legs[r].start_location = smap.fixCoords(rt.legs[r].start_location);
+                rt.legs[r].end_location = smap.fixCoords(rt.legs[r].end_location);
+                var s;
+                var steps = rt.legs[r].steps;
+                for (s in steps) {
+                    if (steps.hasOwnProperty(s)) {
+                        steps[s].start_location = smap.fixCoords(steps[s].start_location);
+                        steps[s].end_location = smap.fixCoords(steps[s].end_location);
+                        steps[s].start_point = smap.fixCoords(steps[s].start_point);
+                        steps[s].end_point = smap.fixCoords(steps[s].end_point);
+                        for (var l in steps[s].lat_lngs) {
+                            steps[s].lat_lngs[l] = smap.fixCoords(steps[s].lat_lngs[l]);
+                        }
+                        for (var l in steps[s].path) {
+                            steps[s].path[l] = smap.fixCoords(steps[s].path[l]);
+                        }
+                    }
                 }
-                for (var l in rt.legs[r].steps[s].path) {
-                    rt.legs[r].steps[s].path[l] = smap.fixCoords(rt.legs[r].steps[s].path[l]);
+                var viaWaypoint = rt.legs[r].via_waypoint;
+                for (s in viaWaypoint) {
+                    if (viaWaypoint.hasOwnProperty(s)) {
+                        viaWaypoint[s].location = smap.fixCoords(viaWaypoint[s].location);
+                    }
                 }
-            }
-            for (var s in rt.legs[r].via_waypoint) {
-                rt.legs[r].via_waypoint[s].location = smap.fixCoords(rt.legs[r].via_waypoint[s].location);
-            }
-            for (var s in rt.legs[r].via_waypoints) {
-                rt.legs[r].via_waypoints[s] = smap.fixCoords(rt.legs[r].via_waypoints[s]);
-            }
+                var viaWaypoints = rt.legs[r].via_waypoints;
+                for (s in viaWaypoints) {
+                    if (viaWaypoints.hasOwnProperty(s)) {
+                        viaWaypoints[s] = smap.fixCoords(viaWaypoints[s]);
+                    }
+                }
 
+            }
         }
     },
     fixCoords: function (o) {
@@ -230,13 +253,16 @@
             smap.students[index] = student;
             smap.setMarker(student);
             smap.table.studentsGrid.setRowData(student.Id, student);
+            if (student.Lat == null || student.Lng == null) {
+                smap.findLatLngForStudent();
+            }
         }
     },
     getLine: function (id) {
         var res = null;
         for (var i = 0; i < smap.lines.list.length; i++) {
             if (smap.lines.list[i].Id == id) {
-                res = smap.lines.list[i];         
+                res = smap.lines.list[i];
 
                 break;
             }
@@ -386,6 +412,7 @@
     },
     closeConextMenu: function () {
         $('.contextmenu').remove();
+        smap.UI.hideLineMenu();
     },
     fixCssColor: function (color) { //fix color for use in css properies
         if (color.substring(0, 1) != "#") color = "#" + color;

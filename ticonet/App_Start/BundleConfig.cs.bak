@@ -31,7 +31,6 @@ namespace IdentitySample
                          "~/Scripts/Map/Map.Table.js",
                          "~/Scripts/Map/Map.Stations.js",
                          "~/Scripts/Map/Map.Lines.js",
-                         "~/Scripts/Map/Map.Lines.Overlay.js",
                          "~/Scripts/Map/Map.UI.js",
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
@@ -98,51 +97,6 @@ namespace IdentitySample
 
             bundles.Add(new StyleBundle("~/bundles/cssReport").Include(
                     "~/Content/Report.css"));
-
-
-            //---------------------------------------------
-            //Messages Module
-            //------------------------
-
-            bundles.Add(new ScriptBundle("~/bundles/AngularApp").Include(
-                    //AngularJS
-                    "~/Scripts/angular.js",
-                    "~/Scripts/angular-route.js",
-                    "~/Scripts/angular-animate.js",
-                    //Libraries
-                    "~/AngularApp/Libraries/CodeArea.js",
-
-                    "~/AngularApp/Libraries/TSNetLike/Collections/ArrayExtensions.js",
-                    "~/AngularApp/Libraries/TSNetLike/StringExtensions.js",
-
-                    "~/AngularApp/Libraries/TSNetLike/Collections/Dictionary.js",
-                    "~/AngularApp/Libraries/TSNetLike/Functors/Functors.js",
-
-                    "~/AngularApp/Libraries/TranslatonUtils.js",
-
-                    "~/AngularApp/AppGlobal.js",
-                    //Models
-                    "~/AngularApp/SharedViewModels.js",
-                    //Common
-                    "~/AngularApp/Controller.js",
-                    "~/AngularApp/GridManager.js",
-                    "~/AngularApp/Controllers/SHARED.js",
-                    //Controllers 
-                    "~/AngularApp/Controllers/NotificationController.js",
-                    "~/AngularApp/Controllers/FiltersController.js",
-                    "~/AngularApp/Controllers/TemplatesController.js",
-                    "~/AngularApp/Controllers/SendMessagesController.js",
-                    "~/AngularApp/Controllers/ReportsController.js",
-                    "~/AngularApp/Controllers/MessageModulePageController.js",
-
-                    //Configs
-                    //Services
-                    //App
-                    "~/AngularApp/App.js"
-            ));
-
-            bundles.Add(new StyleBundle("~/bundles/MessagesModule").Include(
-                    "~/Content/bootstrap.min.css"));
         }
     }
 }

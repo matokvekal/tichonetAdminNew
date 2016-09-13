@@ -198,15 +198,17 @@
         } else {
             smap.UI.loadFamily(student.Id);
         }
-        
+
 
         //show stations connect lines
         var stations = smap.getAttachInfo(student.Id);
 
         for (var j in stations) {
             var stt = smap.stations.getStation(stations[j].StationId);
+            var pos = student.Marker.getPosition();
             var nm = stations[j].Date != null;
-            smap.drawLine(student.Lat, student.Lng, stt.StrLat, stt.StrLng, nm);
+            console.log(pos);
+            smap.drawLine(pos.lat(), pos.lng(), stt.StrLat, stt.StrLng, nm);
         }
 
         //handle closing info window for hide lines
@@ -231,7 +233,7 @@
         });
         if (tabIndex == 1) smap.UI.showBuses(studentId);
     },
-    loadFamily: function (id) {//load info about family for show in InfoWindow
+    loadFamily: function (id) { //load info about family for show in InfoWindow
         $.get("/api/Students/Family", { id: id }).done(function (loader) {
 
             var cont = $("#dIW" + loader.Id).find("div[rel=family]");
@@ -281,7 +283,7 @@
             $("<div class='iw-bus-info-small'>" + t + "</div>").appendTo(cont);
         }
     },
-    openAddressEditDialog:function(id) {
+    openAddressEditDialog: function (id) {
         $("#frmStudAddr").find("input[name=StudentId]").val(id);
         $.get("/api/Students/Address/" + id).done(function (loader) {
             var st = loader;
@@ -291,7 +293,7 @@
                 if ($(ctrl).attr("type") == "text") $(ctrl).val(st[key]);
                 if ($(ctrl).attr("type") == "hidden") $(ctrl).val(st[key]);
                 if ($(ctrl).attr("type") == "checkbox") $(ctrl).prop("checked", st[key]);
-    }
+            }
         });
 
 
@@ -329,11 +331,23 @@
             buttons: {
                 "Save": function () {
                     var data = $("#frmStudAddr").serialize();
-                    console.log(data);
+                    //console.log(data);
                     $.post("/api/students/address", data).done(function (loader) {
                         console.log(loader);
-                        smap.up
-
+                        if (loader.Done) {
+                            smap.updateStudent(loader.Student);
+                            for (var i in loader.Stations) {
+                                if (loader.Stations.hasOwnProperty(i)) {
+                                    smap.stations.updateStation(loader.Stations[i]);
+                                }
+                            }
+                            for (var j in loader.Lines) {
+                                if (loader.Lines.hasOwnProperty(j)) {
+                                    smap.lines.updateLine(loader.Lines[j]);
+                                }
+                            }
+                        }
+                        dialog.dialog("close");
                     });
                 },
                 Cancel: function () {
@@ -342,5 +356,34 @@
             }
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    swithFirstLineStations: function (e) {
+        
+        var rel = $(e.target).attr("rel");
+        var ref = $(e.target).attr("ref");
+        var checked = $(e.target).prop("checked");
+        if (checked) {
+            if (rel == 'first') {
+                $("input[ref=" + ref + "][rel=last]").prop("checked", false);
+            } else {
+                $("input[ref=" + ref + "][rel=first]").prop("checked", false);
+            }
+        }
+    },
+    showLineMenu: function (id, e) {
+        $("#dLineMenu").remove();
+        var coffset = $("#map-canvas").offset();
+        var offset = $(e.target).offset();
+        $("<div id='dLineMenu' class='line-table-menu'></div>").appendTo("#map-canvas");
+        $("#dLineMenu").css("top", (offset.top - coffset.top+15) + "px").css("left", (offset.left - coffset.left-70) + "px");
+        $("<div><a href='javascript:smap.lines.showTimeTable(" + id + ");smap.UI.hideLineMenu();'>Time Table</a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.lineStationsVisibleSwitch(" + id + ");smap.UI.hideLineMenu();' ><span>Show / hide stations</span></a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.resetWays(" + id + ");smap.UI.hideLineMenu();'>Recalc route</a></div>").appendTo("#dLineMenu");
+        e.stopPropagation();;
+        return false;
+        
+    },
+    hideLineMenu: function() {
+        $("#dLineMenu").remove();
     }
 }
