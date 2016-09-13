@@ -159,7 +159,9 @@
                 <a class="abut" ng-click="hideEditor()">@DEBS.Translate("MessageModule.Cancel")</a>
             </div>
             <div>
-                <a class="abut" ng-click="DEMO()">@DEBS.Translate("MessageModule.Save and Get Demo Messages")</a>
+                <div ng-if="va.curtemplate.Id>0">
+                    <a class="abut" ng-click="DEMO()">@DEBS.Translate("MessageModule.Save and Get Demo Messages")</a>
+                </div>
                 <hr />
                 <div ng-repeat="msg in va.demomsgs">
                     <div>{{msg.Header}}</div>
