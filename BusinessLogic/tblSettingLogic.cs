@@ -15,6 +15,8 @@ namespace Business_Logic
                     Id = 0,
                     PopulateLinesIsActive = null,
                     PopulateLinesLastRun = null,
+                    BatchSendingIsActive = null,
+                    BatchSendingLastRun = null,
                 };
                 DB.tblSettings.Add(setting);
                 DB.SaveChanges();
@@ -42,6 +44,37 @@ namespace Business_Logic
                 if (value == null) return;
                 var setting = Get();
                 setting.PopulateLinesLastRun = value;
+                DB.Entry(setting).State = EntityState.Modified;
+                DB.SaveChanges();
+            }
+        }
+        public bool BatchSendingIsActive
+        {
+            get
+            {
+                var setting = Get();
+                return setting.BatchSendingIsActive.HasValue ? setting.BatchSendingIsActive.Value : false;
+            }
+            set
+            {
+                var setting = Get();
+                setting.BatchSendingIsActive = value;
+                DB.Entry(setting).State = EntityState.Modified;
+                DB.SaveChanges();
+            }
+        }
+        public DateTime? BatchSendingLastRun
+        {
+            get
+            {
+                var setting = Get();
+                return setting.BatchSendingLastRun;
+            }
+            set
+            {
+                if (value == null) return;
+                var setting = Get();
+                setting.BatchSendingLastRun = value;
                 DB.Entry(setting).State = EntityState.Modified;
                 DB.SaveChanges();
             }

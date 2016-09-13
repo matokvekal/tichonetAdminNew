@@ -10,7 +10,7 @@
         onFailed?: ((response?) => void) | ConcurentRequestHandler,
     }
 
-    function CloneRequestArgs(data: IRequestArgs): IRequestArgs {
+    export function CloneRequestArgs(data: IRequestArgs): IRequestArgs {
         return {
             urlalias: data.urlalias,
             params: data.params,

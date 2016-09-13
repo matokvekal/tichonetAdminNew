@@ -1,0 +1,36 @@
+﻿@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
+<div ng-controller="SettingsController"
+     data-ng-init="init({
+        urls: {
+            updateappconfig: '@Url.Action("Update","AppConfig")',
+            getappconfig: '@Url.Action("Get","AppConfig")',
+        }
+    })">
+    
+    <div class="clearfix"><!-- Container  -->
+    
+        <div class="txt-s-med txt-c-gr bot-bord">
+            @DEBS.Translate("MessageModule.General setting")
+        </div>
+        <div>
+            <i class="glyphicon glyphicon-off clickable txt-anim"
+               ng-click="va.batchSendingIsActive=!va.batchSendingIsActive; SetBatchSendingIsActive(va.batchSendingIsActive)"
+               ng-class="va.batchSendingIsActive ? 'txt-c-green' : 'txt-c-red'">
+            </i>
+            @DEBS.Translate("MessageModule.active")
+        </div>
+        <div class="txt-s-med txt-c-gr bot-bord">
+            @DEBS.Translate("MessageModule.Mail service")
+        </div>
+        <div>@DEBS.Translate("MessageModule.Sender address")</div>
+        <div>@DEBS.Translate("MessageModule.Port")</div>
+        <div class="txt-s-med txt-c-gr bot-bord">
+            @DEBS.Translate("MessageModule.Sms service")
+        </div>
+        <div>@DEBS.Translate("MessageModule.Sender address")</div>
+        <div>...</div>
+
+    </div>
+</div>
+

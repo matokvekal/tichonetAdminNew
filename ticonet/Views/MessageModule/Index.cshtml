@@ -110,16 +110,7 @@
                     <div class="txt-s-huge txt-c-base">
                         @DEBS.Translate("MessageModule.Settings")
                     </div>
-                    <div class="txt-s-med txt-c-gr bot-bord">
-                        @DEBS.Translate("MessageModule.Mail service")
-                    </div>
-                    <div>@DEBS.Translate("MessageModule.Sender address")</div>
-                    <div>@DEBS.Translate("MessageModule.Port")</div>
-                    <div class="txt-s-med txt-c-gr bot-bord">
-                        @DEBS.Translate("MessageModule.Sms service")
-                    </div>
-                    <div>@DEBS.Translate("MessageModule.Sender address")</div>
-                    <div>...</div>
+                    @Html.Partial("_ngSettings")
                 </div>
 
                 <!-- Recepient Filters -->

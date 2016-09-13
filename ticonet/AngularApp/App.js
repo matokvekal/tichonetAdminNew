@@ -7,6 +7,7 @@ var AngularApp;
     App.controller('TemplatesController', AngularApp.Controllers.TemplatesController);
     App.controller('SendMessagesController', AngularApp.Controllers.SendMessagesController);
     App.controller('ReportsController', AngularApp.Controllers.ReportsController);
+    App.controller('SettingsController', AngularApp.Controllers.SettingsController);
     //todo move to directives
     //DRAG-N-DROP directives
     App.directive('draggable', function () {

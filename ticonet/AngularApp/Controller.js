@@ -11,6 +11,7 @@ var AngularApp;
             onFailed: data.onFailed
         };
     }
+    AngularApp.CloneRequestArgs = CloneRequestArgs;
     /**
      This Class used for simultaneously running requests to server.
      It runs it's callback only when all binded requests will be ended.

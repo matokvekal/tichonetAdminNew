@@ -371,6 +371,8 @@
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="PopulateLinesIsActive" Type="bit" />
           <Property Name="PopulateLinesLastRun" Type="datetime" />
+          <Property Name="BatchSendingIsActive" Type="bit" />
+          <Property Name="BatchSendingLastRun" Type="datetime" />
         </EntityType>
         <EntityType Name="tblStreet">
           <Key>
@@ -1577,7 +1579,9 @@ warning 6002: The table/view 'BusProject.dbo.viewStudentWithStationForEmail' doe
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="PopulateLinesIsActive" Type="Boolean" />
           <Property Name="PopulateLinesLastRun" Type="DateTime" Precision="3" />
-        </EntityType>
+          <Property Name="BatchSendingIsActive" Type="Boolean" />
+          <Property Name="BatchSendingLastRun" Type="DateTime" Precision="3" />
+    </EntityType>
         <EntityType Name="tblSchool">
           <Key>
             <PropertyRef Name="id" />
@@ -2264,6 +2268,8 @@ warning 6002: The table/view 'BusProject.dbo.viewStudentWithStationForEmail' doe
 		  <EntitySetMapping Name="tblSettings">
             <EntityTypeMapping TypeName="BusProjectModel.tblSetting">
               <MappingFragment StoreEntitySet="tblSetting">
+                <ScalarProperty Name="BatchSendingLastRun" ColumnName="BatchSendingLastRun" />
+                <ScalarProperty Name="BatchSendingIsActive" ColumnName="BatchSendingIsActive" />
                 <ScalarProperty Name="PopulateLinesLastRun" ColumnName="PopulateLinesLastRun" />
                 <ScalarProperty Name="PopulateLinesIsActive" ColumnName="PopulateLinesIsActive" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

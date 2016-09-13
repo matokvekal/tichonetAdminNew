@@ -1312,6 +1312,7 @@
     <Content Include="Views\MessageModule\_ngReports.cshtml" />
     <Content Include="Views\MessageModule\_ngSchedules.cshtml" />
     <Content Include="Views\MessageModule\_ngTemplates.cshtml" />
+    <Content Include="Views\MessageModule\_ngSettings.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1345,6 +1346,7 @@
     <TypeScriptCompile Include="AngularApp\Controllers\ReportsController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\SendMessagesController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\SHARED.ts" />
+    <TypeScriptCompile Include="AngularApp\Controllers\SettingsController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\TemplatesController.ts" />
     <TypeScriptCompile Include="AngularApp\GridManager.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\CodeArea.ts" />

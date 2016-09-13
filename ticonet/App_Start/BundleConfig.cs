@@ -134,6 +134,7 @@ namespace IdentitySample
                     "~/AngularApp/Controllers/SendMessagesController.js",
                     "~/AngularApp/Controllers/ReportsController.js",
                     "~/AngularApp/Controllers/MessageModulePageController.js",
+                    "~/AngularApp/Controllers/SettingsController.js",
 
                     //Configs
                     //Services
