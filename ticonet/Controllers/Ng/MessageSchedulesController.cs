@@ -63,9 +63,15 @@ namespace ticonet.Controllers.Ng {
                         }).SelectMany(x => x.tblMessageSchedules);
                 }
 
-                int count;
-                var queryResult = l.GetFiltered(Skip,Count,filters, out count, baseQuery)
-                    .Select(x => PocoConstructor.MakeFromObj(x, MessageScheduleVM.tblMessageSchedulePR));
+                var query = l.GetFilteredQueryable(filters, baseQuery);
+                int count = query.Count();
+                query = query.OrderByDescending(x => x.ScheduleDate);
+                if (Skip != null)
+                    query = query.Skip(Skip.Value);
+                if (Count != null)
+                    query = query.Take(Count.Value);
+                var queryResult = query.ToList().Select(x => PocoConstructor.MakeFromObj(x, MessageScheduleVM.tblMessageSchedulePR));
+
                 return FetchResult<MessageScheduleVM>.Succes(queryResult, count);
             }
         }

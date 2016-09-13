@@ -24,9 +24,15 @@ namespace ticonet.Controllers.Ng {
 
         protected override FetchResult<BatchReportVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             using (var l = new MessagesModuleLogic()) {
-                int count;
-                var queryResult = l.GetFiltered<tblMessageBatch>(Skip, Count, filters, out count)
-                    .Select(x => PocoConstructor.MakeFromObj(x, BatchReportVM.tblMessageBatchPR));
+                var query = l.GetFilteredQueryable<tblMessageBatch>(filters);
+                int count = query.Count();
+                query = query.OrderByDescending(x => x.FinishedOn).ThenByDescending(x => x.CreatedOn);
+                if (Skip != null)
+                    query = query.Skip(Skip.Value);
+                if (Count != null)
+                    query = query.Take(Count.Value);
+                var queryResult = query.ToList().Select(x => PocoConstructor.MakeFromObj(x, BatchReportVM.tblMessageBatchPR));
+
                 return FetchResult<BatchReportVM>.Succes(queryResult, count);
             }
         }
