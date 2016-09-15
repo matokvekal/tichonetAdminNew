@@ -111,7 +111,16 @@ namespace ticonet
                         model.Minutes, 0);
                 }
             }
-
+            var wd = new WeekDays
+            {
+                Monday = model.Mon == "on",
+                Tuesday = model.Tue=="on",
+                Wednesday = model.Wed =="on",
+                Thursday = model.Thu == "on",
+                Friday = model.Fri =="on",
+                Saturday = model.Sat =="on",
+                Sunday = model.Sun=="on"
+            };
             using (var logic = new tblStudentLogic())
             {
                 var oldList = logic.GetAttachInfo(model.StudentId);
@@ -127,7 +136,8 @@ namespace ticonet
                     model.Distance,
                     (ColorMode)model.UseColor,
                     date,
-                    model.ConflictAction);
+                    model.ConflictAction,
+                    wd);
             }
             using (var logic = new tblStudentLogic())
             {
@@ -168,10 +178,10 @@ namespace ticonet
             StudentToLineModel res = null;
             if (model.Id == 0) //update distance
             {
-                
+
                 using (var logic = new StationsLogic())
                 {
-                    if ( logic.UpdateDistance(model.StudentId, model.StationId, model.Distance))
+                    if (logic.UpdateDistance(model.StudentId, model.StationId, model.Distance))
                     {
                         var att = logic.GetAttachInfo(model.StudentId, model.StationId);
                         if (att.Count > 0) res = new StudentToLineModel(att[0]);
@@ -243,7 +253,7 @@ namespace ticonet
                 res.Station.Students = logic.GetStudents(model.StationId)
                         .Select(z => new StudentToLineModel(z))
                         .ToList();
-                
+
             }
             using (var logic = new LineLogic())
             {
@@ -263,8 +273,10 @@ namespace ticonet
         }
 
         [System.Web.Mvc.HttpPost]
-        public JsonResult ChangeStationPosition(int stationId, int lineId, int newPosition) {
-            using(var l = new StationsLogic()) {
+        public JsonResult ChangeStationPosition(int stationId, int lineId, int newPosition)
+        {
+            using (var l = new StationsLogic())
+            {
                 var result = l.ChangeStationPosition(stationId, lineId, newPosition);
                 return new JsonResult { Data = result };
             }
