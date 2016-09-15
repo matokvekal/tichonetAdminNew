@@ -87,6 +87,7 @@
     <Compile Include="Entities\StudentLineInfo.cs" />
     <Compile Include="Entities\StudentSearchRequest.cs" />
     <Compile Include="Entities\StudentShortInfo.cs" />
+    <Compile Include="Entities\WeekDays.cs" />
     <Compile Include="Enums\ColorMode.cs" />
     <Compile Include="Enums\ConflictActions.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
