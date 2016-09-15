@@ -25,6 +25,13 @@ namespace ticonet.Models
             Date = data.Date;
             Distance = data.distanceFromStation;
             Geometry = data.PathGeometry;
+            Mon = data.mon==true; //false if false or null
+            Tue = data.tue == true;
+            Wed = data.wed == true;
+            Thu = data.thu == true;
+            Fri = data.fri == true;
+            Sat = data.sat == true;
+            Sun = data.sun == true;
         }
 
         public int Id { get; set; }
@@ -58,6 +65,23 @@ namespace ticonet.Models
             {
                 if (!Date.HasValue) return "--";
                 return Date.Value.ToString("HH:mm");
+            }
+        }
+
+        public bool Mon { get; set; }
+        public bool Tue { get; set; }
+        public bool Wed { get; set; }
+        public bool Thu { get; set; }
+        public bool Fri { get; set; }
+        public bool Sat { get; set; }
+        public bool Sun { get; set; }
+
+        public bool isDefault
+        {
+            get
+            {
+                return Date == null && Mon != true && Tue != true && Wed != true && Thu != true && Fri != true &&
+                       Sat != true && Sun != true;
             }
         }
     }
