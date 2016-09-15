@@ -393,10 +393,10 @@
                 c++;
             }
         }
-        console.log("show: " + c);
+      
     },
     studentDargEnd: function (position, student) {// check where was moved studen
-        console.log("drag end");
+        
         var c = 0;
         for (var i = 0; i < smap.stations.list.length; i++) {
             var m = smap.stations.list[i].Marker;
@@ -412,7 +412,7 @@
                 c++;
             }
         }
-        console.log("hide: " + c);
+      
     },
     attachStudentToStation: function (student, station) {
         $("#dConfirmAttach").html("Do you want to attach " + student.Name + " to station '" + station.Name + "'?");
@@ -480,6 +480,8 @@
                                     smap.lines.updateLine(loader.Lines[i]);
                                 }
                                 for (var i in loader.Stations) {
+                                    console.log("Update station:");
+                                    console.dir(loader.Stations[i]);
                                     smap.stations.updateStation(loader.Stations[i]);
                                 }
                                 smap.updateStudent(loader.Student);
