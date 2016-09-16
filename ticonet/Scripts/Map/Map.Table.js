@@ -117,8 +117,9 @@
         $('<input />', { type: 'checkbox', id: 'cbAll', checked: "checked" }).appendTo($("#grStudents_show"));
         $("#cbAll").click(function (event) {
             var s = $(this).prop("checked");
-            for (var j = 0; j < smap.students.length; j++) {
-                smap.table.swithMarker(smap.students[j].Id, s);
+            var ids = smap.table.studentsGrid.jqGrid('getDataIDs');
+            for (var j = 0; j < ids.length; j++) {
+                smap.table.swithMarker(ids[j], s);
             }
         });
 
