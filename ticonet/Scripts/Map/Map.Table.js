@@ -221,8 +221,8 @@
                             { name: 'ArrivalDateString', width: 100, align: 'center' }
                         ]
                     });
-                    smap.table.refreshSbGrd(rowId)
-                    smap.table.sortByDefSbGrd()
+                    smap.table.refreshSbGrd(rowId);
+                    smap.table.sortByDefSbGrd();
                 }
 
             });
@@ -238,6 +238,20 @@
         smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
         smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
 
+        // Show/hide all lines
+        $('<input />', { type: 'checkbox', id: 'cbLinesAll', checked: "checked" }).appendTo($("#grLines_show"));
+        $('#cbLinesAll').click(function() {
+            var s = $('#cbLinesAll').prop("checked");
+            var ids = smap.table.linesGrid.jqGrid('getDataIDs');
+            for (var n in ids) {
+                if (s) {
+                    smap.lines.showLine(ids[n]);
+                } else {
+                    smap.lines.hideLine(ids[n]);
+                }
+            }
+            
+        });
 
         //Hide buttons "Clear search"
         $(".ui-search-clear").remove();

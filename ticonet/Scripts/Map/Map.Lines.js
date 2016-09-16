@@ -21,7 +21,7 @@
             var index = smap.lines.list.indexOf(oldline);
             smap.lines.list[index] = line;
             smap.table.linesGrid.setRowData(line.Id, line);
-            //smap.ways = null; //TODO: Redid for save old ways
+            
         } else {
             smap.lines.list.push(line);
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
@@ -36,6 +36,7 @@
         if (!(line.Stations)) return;
         if (line.Stations.length < 2) return;
         line.show = true;
+        smap.table.linesGrid.setRowData(line.Id, line);
 
         smap.lines.calcLine(id, function (line) {
             for (var i in line.ways) {
@@ -324,7 +325,10 @@
                 line.ways[i].display.setMap(null);
             }
             smap.lines.overlay.showLineOverlay();
+            smap.table.linesGrid.setRowData(line.Id, line);
         }
+        
+
     },
     resetWays: function (id) {
         var ln = smap.getLine(id);
