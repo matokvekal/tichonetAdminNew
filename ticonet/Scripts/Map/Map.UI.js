@@ -385,5 +385,31 @@
     },
     hideLineMenu: function() {
         $("#dLineMenu").remove();
+    },
+    showAdvConfirm:function(message, callback) {
+        $("#dAComfirmMessage").html(message);
+        $("#txtAConfirmPass").removeClass("has-error");
+        $("#txtAConfirmPass").val("");
+        var dlg = $("#dlgAdvConfirm").dialog({
+            autoOpen: true,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Yes":function() {
+                    if ($("#txtAConfirmPass").val() == smap.simplePassword()) {
+                        $("#txtAConfirmPass").val("");
+                        dlg.dialog("close");
+                        callback();
+                    } else {
+                        $("#txtAConfirmPass").addClass("has-error");
+                    }
+                },
+                "No":function() {
+                    $("#txtAConfirmPass").val("");
+                    dlg.dialog("close");
+                }
+            }
+        });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     }
 }

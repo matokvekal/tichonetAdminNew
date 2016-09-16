@@ -8,6 +8,7 @@
     checkDistanceStudents: [],
     graphicElements: [],
     attachGrid: null,
+    simplePassword: function () { return $("#hfSimplePassword").val(); },
     init: function () {
 
 
