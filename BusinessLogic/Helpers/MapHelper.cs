@@ -15,6 +15,7 @@ namespace Business_Logic.Helpers
         const double DefaultLat = 32.086368;
         const double DefaultLng = 34.889135;
         const int DefaultZoom = 12;
+        const string DefaultSimplePassword = "1234";
 
         public static Double CenterLat
         {
@@ -146,7 +147,23 @@ namespace Business_Logic.Helpers
             }
         }
 
-
+        public static string SimplePassword
+        {
+            get
+            {
+                var p = SettingsHelper.GetSettingValue("Map", "SimplePassword");
+                if (string.IsNullOrEmpty(p))
+                {
+                    SettingsHelper.SetSettingValue("Map","SimplePassword",DefaultSimplePassword);
+                    p = DefaultSimplePassword;
+                }
+                return p;
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "SimplePassword", value);
+            }
+        }
 
         public static bool IsPointInCircle(double latPoint, double lonPoint, double latCenterCircle, double lonCenterCircle, double radius)
         {
