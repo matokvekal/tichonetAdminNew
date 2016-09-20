@@ -31,6 +31,9 @@
 
             this.scope.SaveProvider = this.saveProvider
             this.scope.DeleteProvider = this.deleteProvider
+            this.scope.CreateSmsProvider = () => this.createProvider(true)
+            this.scope.CreateEmailProvider = () => this.createProvider(false)
+
 
             this.scope.SetBatchSendingIsActive = (isActive: boolean) => {
                 this.refetchBatchSendingIsActive(isActive);
@@ -46,10 +49,14 @@
             this.fetchtoarr(true, { urlalias: "getemailprovs" }, this.va.emailProvs, true)
         }
 
-        saveProvider = (prov: EmailSenderDataProviderVM | SmsSenderDataProviderVM) => {
+        saveProvider = (prov: EmailSenderDataProviderVM | SmsSenderDataProviderVM, callback?: (r) => void) => {
             let mode = prov.ng_JustCreated ? "cr" : "up"
+            //let callback = prov.ng_JustCreated ? (r) => this.initData() : (r) => { }
             let alias = IsEmailSenderDataProviderVM(prov) ? "mngemailprovs" : "mngsmsprovs"
-            this.request(true, { urlalias: alias, params: { models: [prov], mode: mode } } )
+            this.request(true, {
+                urlalias: alias, params: { models: [prov], mode: mode },
+                onSucces: callback
+             } )
         }
 
         deleteProvider = (prov: EmailSenderDataProviderVM | SmsSenderDataProviderVM) => {
@@ -64,10 +71,20 @@
         }
 
         createProvider = (SmsProvider: boolean) => {
+            let newProv: SmsSenderDataProviderVM | EmailSenderDataProviderVM
             if (SmsProvider)
-                this.va.smsProvs.unshift(new SmsSenderDataProviderVM())
+                newProv = new SmsSenderDataProviderVM()
             else
-                this.va.emailProvs.unshift(new EmailSenderDataProviderVM())
+                newProv = new EmailSenderDataProviderVM()
+
+            let cb = (r) => {
+                this.initData()
+                //newProv.ng_JustCreated = false
+                //if (SmsProvider) this.va.smsProvs.unshift(newProv as SmsSenderDataProviderVM)
+                //else this.va.emailProvs.unshift(newProv as EmailSenderDataProviderVM)
+            }
+
+            this.saveProvider(newProv,cb)
         }
 
         refetchBatchSendingIsActive = (isActive: boolean) => {

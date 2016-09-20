@@ -25,12 +25,12 @@ namespace ticonet.Controllers.Ng.ViewModels {
 
         public static POCOReflector<EmailSenderDataProviderVM, tblEmailSenderDataProvider> ReflectToTblEmailSenderDataProvider =
              POCOReflector<EmailSenderDataProviderVM, tblEmailSenderDataProvider>.Create(
-                 (m, o) => o.Name = m.Name,
+                 (m, o) => o.Name = m.Name ?? string.Empty,
                  (m, o) => o.IsActive = m.IsActive,
-                 (m, o) => o.FromEmailAddress = m.FromEmailAddress,
-                 (m, o) => o.FromEmailDisplayName = m.FromEmailDisplayName,
-                 (m, o) => o.FromEmailPassword = m.FromEmailPassword,
-                 (m, o) => o.SmtpHostName = m.SmtpHostName,
+                 (m, o) => o.FromEmailAddress = m.FromEmailAddress ?? string.Empty,
+                 (m, o) => o.FromEmailDisplayName = m.FromEmailDisplayName ?? string.Empty,
+                 (m, o) => o.FromEmailPassword = m.FromEmailPassword ?? string.Empty,
+                 (m, o) => o.SmtpHostName = m.SmtpHostName ?? string.Empty,
                  (m, o) => o.SmtpPort = m.SmtpPort,
                  (m, o) => o.EnableSsl = m.EnableSsl,
                  (m, o) => o.SendProviderRestrictionDataJSON = JsonConvert.SerializeObject(m.RestrictionData)

@@ -1,4 +1,6 @@
-﻿using Business_Logic.MessagesModule;
+﻿//#define EAT_EXCEPTIONS
+
+using Business_Logic.MessagesModule;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using DEBS = Business_Logic.DictExpressionBuilderSystem;
@@ -55,32 +57,50 @@ namespace ticonet.ParentControllers {
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult Fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
-            var result = _fetch(Skip, Count, filters);
-            return NgResultToJsonResult(result);
+            try {
+                var result = _fetch(Skip, Count, filters);
+                return NgResultToJsonResult(result);
+            }
+            catch {
+#if EAT_EXCEPTIONS
+                return NgResultToJsonResult(NgResult.Fail("Internal Server Error"));
+#else
+                throw;
+#endif
+            }
         }
 
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult Manage(string mode, TModel[] models) {
-            NgResult result;
-            switch (mode) {
-                case "cr":
-                case "create":
-                    result = _create(models);
-                    break;
-                case "up":
-                case "update":
-                    result = _update(models);
-                    break;
-                case "dl":
-                case "delete":
-                    result = _delete(models);
-                    break;
-                default:
-                    result = NgResult.Fail(DEBS.Translate("MessageMdl.Undefined Manage mode: {0}", mode));
-                    break;
+            try {
+                NgResult result;
+                switch (mode) {
+                    case "cr":
+                    case "create":
+                        result = _create(models);
+                        break;
+                    case "up":
+                    case "update":
+                        result = _update(models);
+                        break;
+                    case "dl":
+                    case "delete":
+                        result = _delete(models);
+                        break;
+                    default:
+                        result = NgResult.Fail(DEBS.Translate("MessageMdl.Undefined Manage mode: {0}", mode));
+                        break;
+                }
+                return NgResultToJsonResult(result);
             }
-            return NgResultToJsonResult(result);
+            catch {
+#if EAT_EXCEPTIONS
+                return NgResultToJsonResult(NgResult.Fail("Internal Server Error"));
+#else
+                throw;
+#endif
+            }
         }
 
         protected JsonResult NgResultToJsonResult(NgResult result) {

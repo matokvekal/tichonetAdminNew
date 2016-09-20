@@ -299,4 +299,3 @@ var AngularApp;
         Controllers.SendMessagesController = SendMessagesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SendMessagesController.js.map

@@ -24,10 +24,14 @@ var AngularApp;
                     _this.fetchtoarr(true, { urlalias: "getsmsprovs" }, _this.va.smsProvs, true);
                     _this.fetchtoarr(true, { urlalias: "getemailprovs" }, _this.va.emailProvs, true);
                 };
-                this.saveProvider = function (prov) {
+                this.saveProvider = function (prov, callback) {
                     var mode = prov.ng_JustCreated ? "cr" : "up";
+                    //let callback = prov.ng_JustCreated ? (r) => this.initData() : (r) => { }
                     var alias = Controllers.IsEmailSenderDataProviderVM(prov) ? "mngemailprovs" : "mngsmsprovs";
-                    _this.request(true, { urlalias: alias, params: { models: [prov], mode: mode } });
+                    _this.request(true, {
+                        urlalias: alias, params: { models: [prov], mode: mode },
+                        onSucces: callback
+                    });
                 };
                 this.deleteProvider = function (prov) {
                     var isEmailProv = Controllers.IsEmailSenderDataProviderVM(prov);
@@ -40,10 +44,18 @@ var AngularApp;
                     });
                 };
                 this.createProvider = function (SmsProvider) {
+                    var newProv;
                     if (SmsProvider)
-                        _this.va.smsProvs.unshift(new Controllers.SmsSenderDataProviderVM());
+                        newProv = new Controllers.SmsSenderDataProviderVM();
                     else
-                        _this.va.emailProvs.unshift(new Controllers.EmailSenderDataProviderVM());
+                        newProv = new Controllers.EmailSenderDataProviderVM();
+                    var cb = function (r) {
+                        _this.initData();
+                        //newProv.ng_JustCreated = false
+                        //if (SmsProvider) this.va.smsProvs.unshift(newProv as SmsSenderDataProviderVM)
+                        //else this.va.emailProvs.unshift(newProv as EmailSenderDataProviderVM)
+                    };
+                    _this.saveProvider(newProv, cb);
                 };
                 this.refetchBatchSendingIsActive = function (isActive) {
                     //TODO Update config
@@ -64,6 +76,8 @@ var AngularApp;
                 //Scope Init
                 this.scope.SaveProvider = this.saveProvider;
                 this.scope.DeleteProvider = this.deleteProvider;
+                this.scope.CreateSmsProvider = function () { return _this.createProvider(true); };
+                this.scope.CreateEmailProvider = function () { return _this.createProvider(false); };
                 this.scope.SetBatchSendingIsActive = function (isActive) {
                     _this.refetchBatchSendingIsActive(isActive);
                 };
@@ -76,4 +90,3 @@ var AngularApp;
         Controllers.SettingsController = SettingsController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SettingsController.js.map

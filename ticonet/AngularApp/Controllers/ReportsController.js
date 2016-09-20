@@ -54,4 +54,3 @@ var AngularApp;
         Controllers.ReportsController = ReportsController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=ReportsController.js.map

@@ -23,12 +23,12 @@ namespace ticonet.Controllers.Ng.ViewModels {
 
         public static POCOReflector<SmsSenderDataProviderVM, tblSmsSenderDataProvider> ReflectToTblSmsSenderDataProvider =
              POCOReflector<SmsSenderDataProviderVM, tblSmsSenderDataProvider>.Create(
-                 (m, o) => o.Name = m.Name,
+                 (m, o) => o.Name = m.Name ?? string.Empty,
                  (m, o) => o.IsActive = m.IsActive,
-                 (m, o) => o.FromDisplayName = m.FromDisplayName,
-                 (m, o) => o.FromPhoneNumber = m.FromPhoneNumber,
-                 (m, o) => o.Username = m.Username,
-                 (m, o) => o.Password = m.Password,
+                 (m, o) => o.FromDisplayName = m.FromDisplayName ?? string.Empty,
+                 (m, o) => o.FromPhoneNumber = m.FromPhoneNumber ?? string.Empty,
+                 (m, o) => o.Username = m.Username ?? string.Empty,
+                 (m, o) => o.Password = m.Password ?? string.Empty,
                  (m, o) => o.MessageInterval = m.MessageInterval,
                  (m, o) => o.SendProviderRestrictionDataJSON = JsonConvert.SerializeObject(m.RestrictionData)
             );

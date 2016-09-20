@@ -11,6 +11,24 @@
             mngemailprovs: '@Url.Action("Manage","EmailProviderData")',
         }
     })">
+
+<style>
+    .shrink-txt{
+        /*overflow:hidden;
+        text-overflow:ellipsis*/
+        word-wrap: break-word
+    }
+
+    .provider-block input{
+        width:100%
+    }
+
+    .provider-enum{
+        /*max-height: 110px; 
+        overflow-y:auto;*/
+        overflow-x:hidden
+    }
+</style>
     
     <div class="clearfix"><!-- Container  -->
     
@@ -28,81 +46,161 @@
             </span>
         </div>
 
+        <!-- PROVIDERS -->
 
-        <div class="txt-s-med txt-c-gr bot-bord">
-            @DEBS.Translate("MessageModule.Sms Providers")
-        </div>
-        <!-- Sms-provs enum  -->
-        <div style="max-height: 300px; overflow-y:auto">
+        <div style="overflow-y:auto; height:70%">
+
+
+            <!-- -SMS- -->
+            <div class="txt-s-med txt-c-gr bot-bord">
+                @DEBS.Translate("MessageModule.Sms Providers")
+            </div>
+            <!-- Sms-provs enum  -->
             <!--Header-->
-            <div></div>
-
-            <!--Enum-->
-            <div ng-repeat="prov in va.smsProvs">
-                <div>
-
-                    <div class="col-xs-2">
-                        <i class="glyphicon glyphicon-off clickable txt-anim"
-                           ng-click="prov.IsActive=!prov.IsActive; SaveProvider(prov)"
-                           ng-class="prov.IsActive ? 'txt-c-green' : 'txt-c-red'">
-                        </i>
-                        <input class="txtinput" type="text" ng-model="prov.Name" ng-blur="SaveProvider(prov)" />
-                    </div>
-                    <div class="col-xs-2">
-                        <span>
-                            @DEBS.Translate("MessageModule.From(Name)")
-                        </span>
-                        <input class="txtinput" type="text" ng-model="prov.FromDisplayName" ng-blur="SaveProvider(prov)" />
-                    </div>
-                    <div class="col-xs-2">
-                        <span>
-                            @DEBS.Translate("MessageModule.From(PhoneNumber)")
-                        </span>
-                        <input class="txtinput" type="tel" ng-model="prov.FromPhoneNumber" ng-blur="SaveProvider(prov)" />
-                    </div>
-                    <div class="col-xs-2">
-                        <span>
-                            @DEBS.Translate("MessageModule.Username")
-                        </span>
-                        <input class="txtinput" type="text" ng-model="prov.Username" ng-blur="SaveProvider(prov)" />
-                    </div>
-                    <div class="col-xs-2">
-                        <span>
-                            @DEBS.Translate("MessageModule.Password")
-                        </span>
-                        <input class="txtinput" type="password" ng-model="prov.Password" ng-blur="SaveProvider(prov)" />
-                    </div>
-                    <div class="col-xs-1">
-                        <span>
-                            @DEBS.Translate("MessageModule.MessageInterval")
-                        </span>
-                        <input class="txtinput" type="number" ng-model="prov.MessageInterval" ng-blur="SaveProvider(prov)" />
-                    </div>
-
-                    <div class="col-xs-1">
-                        <div>
-                            <span>
-                                @DEBS.Translate("MessageModule.MaxMessages In Hour(0 is unlimited)")
-                            </span>
-                            <input class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInHour" ng-blur="SaveProvider(prov)" />
-                        </div>
-                        <div>
-                            <span>
-                                @DEBS.Translate("MessageModule.MaxMessages In Day(0 is unlimited)")
-                            </span>
-                            <input class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInDay" ng-blur="SaveProvider(prov)" />
-                        </div>
-                    </div>
-
+            <div class="row">
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.ProviderName")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.Username/Password")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.From(Name)")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.From(PhoneNumber)")
+                </div>
+                <div class="col-xs-1 shrink-txt">
+                    @DEBS.Translate("MessageModule.MessageInterval")
+                </div>
+                <div class="col-xs-3 shrink-txt">
+                    @DEBS.Translate("MessageModule.MaxMessages In Hour/In Day(0 is unlimited)")
                 </div>
             </div>
-        </div>
-        <div class="txt-s-med txt-c-gr bot-bord">
-            @DEBS.Translate("MessageModule.Email Providers")
-        </div>
-        <!-- Email-provs enum  -->
-        <div ng-repeat="prov in va.emailProvs">
 
+            <div style="padding: 10px">
+                <a ng-click="CreateSmsProvider()">@DEBS.Translate("MessageModule.create new")</a>
+            </div>
+
+            <!--Enum-->
+            <div class="provider-enum">
+                <div ng-repeat="prov in va.smsProvs">
+                    <div class="provider-block row">
+
+                        <div class="col-xs-2">
+                            <i class="glyphicon glyphicon-off clickable txt-anim"
+                               ng-click="prov.IsActive=!prov.IsActive; SaveProvider(prov)"
+                               ng-class="prov.IsActive ? 'txt-c-green' : 'txt-c-red'">
+                            </i>
+                            <input style="width:80%" class="txtinput" type="text" ng-model="prov.Name" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="text" ng-model="prov.Username" ng-blur="SaveProvider(prov)" />
+                            <input class="txtinput" placeholder="..." type="password" ng-model="prov.Password" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="text" ng-model="prov.FromDisplayName" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="tel" ng-model="prov.FromPhoneNumber" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-1">
+                            <input class="txtinput" type="number" ng-model="prov.MessageInterval" ng-blur="SaveProvider(prov)" />
+                        </div>
+
+                        <div class="col-xs-2">
+                            <input style="width:49%" class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInHour" ng-blur="SaveProvider(prov)" />
+                            <input style="width:49%" class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInDay" ng-blur="SaveProvider(prov)" />
+                        </div>
+
+                        <div class="col-xs-1">
+                            <i class="glyphicon glyphicon-trash iconclick"
+                               ng-click="DeleteProvider(prov)"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- -EMAIL- -->
+
+            <div class="txt-s-med txt-c-gr bot-bord">
+                @DEBS.Translate("MessageModule.Email Providers")
+            </div>
+            <!-- Email-provs enum  -->
+            <!--Header-->
+            <div class="row">
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.ProviderName")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.Adress/Name/Password")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.SmtpHost")
+                </div>
+                <div class="col-xs-2 shrink-txt">
+                    @DEBS.Translate("MessageModule.SmtpPort")
+                </div>
+                <div class="col-xs-1 shrink-txt">
+                    @DEBS.Translate("MessageModule.EnableSsl")
+                </div>
+                <div class="col-xs-3 shrink-txt">
+                    @DEBS.Translate("MessageModule.MaxMessages In Hour/In Day(0 is unlimited)")
+                </div>
+            </div>
+
+            <div style="padding: 10px">
+                <a ng-click="CreateEmailProvider()">@DEBS.Translate("MessageModule.create new")</a>
+            </div>
+
+            <!--Enum-->
+            <div class="provider-enum">
+
+                <div ng-repeat="prov in va.emailProvs">
+                    <div class="provider-block row">
+
+                        <div class="col-xs-2">
+                            <i class="glyphicon glyphicon-off clickable txt-anim"
+                               ng-click="prov.IsActive=!prov.IsActive; SaveProvider(prov)"
+                               ng-class="prov.IsActive ? 'txt-c-green' : 'txt-c-red'">
+                            </i>
+                            <input style="width:80%" class="txtinput" type="text" ng-model="prov.Name" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="email" ng-model="prov.FromEmailAddress" ng-blur="SaveProvider(prov)" />
+                            <input class="txtinput" placeholder="..." type="text" ng-model="prov.FromEmailDisplayName" ng-blur="SaveProvider(prov)" />
+                            <input class="txtinput" placeholder="..." type="password" ng-model="prov.FromEmailPassword" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="text" ng-model="prov.SmtpHostName" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="txtinput" placeholder="..." type="number" ng-model="prov.SmtpPort" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div class="col-xs-1">
+                            <i class="glyphicon iconclick"
+                               ng-click="prov.EnableSsl=!prov.EnableSsl; SaveProvider(prov)"
+                               ng-class="prov.EnableSsl ? 'glyphicon-check' : 'glyphicon-unchecked'">
+                            </i>
+                        </div>
+
+                        <div class="col-xs-2">
+                            <input style="width:49%" class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInHour" ng-blur="SaveProvider(prov)" />
+                            <input style="width:49%" class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInDay" ng-blur="SaveProvider(prov)" />
+                        </div>
+
+                        <div class="col-xs-1">
+                            <i class="glyphicon glyphicon-trash iconclick"
+                               ng-click="DeleteProvider(prov)"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        <!--PROVIDERS END-->
         </div>
 
     </div>

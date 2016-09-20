@@ -222,8 +222,8 @@
 
         Name: string = "NewEmailServiceProvider"
         IsActive: boolean = false
-        FromEmailAddress: string = ""
-        FromEmailDisplayName: string = ""
+        FromEmailAddress: string = "from@mail.com"
+        FromEmailDisplayName: string = "FromName"
         FromEmailPassword: string = ""
         SmtpHostName: string = ""
         SmtpPort: number = 25
@@ -239,9 +239,9 @@
 
         Name: string = "NewSmsServiceProvider"
         IsActive: boolean = false
-        FromDisplayName: string = ""
-        FromPhoneNumber: string = ""
-        Username: string = ""
+        FromDisplayName: string = "FromName"
+        FromPhoneNumber: string = "000"
+        Username: string = "username"
         Password: string = ""
         MessageInterval: number = 5
         RestrictionData: SendProviderRestrictionData = new SendProviderRestrictionData()

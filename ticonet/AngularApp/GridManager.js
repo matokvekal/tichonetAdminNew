@@ -130,4 +130,3 @@ var AngularApp;
     }());
     AngularApp.GridManager = GridManager;
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=GridManager.js.map
