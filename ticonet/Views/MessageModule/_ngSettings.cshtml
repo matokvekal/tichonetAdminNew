@@ -5,6 +5,10 @@
         urls: {
             updateappconfig: '@Url.Action("Update","AppConfig")',
             getappconfig: '@Url.Action("Get","AppConfig")',
+            getsmsprovs: '@Url.Action("Fetch","SmsProviderData")',
+            getemailprovs: '@Url.Action("Fetch","EmailProviderData")',
+            mngsmsprovs: '@Url.Action("Manage","SmsProviderData")',
+            mngemailprovs: '@Url.Action("Manage","EmailProviderData")',
         }
     })">
     
@@ -13,23 +17,93 @@
         <div class="txt-s-med txt-c-gr bot-bord">
             @DEBS.Translate("MessageModule.General setting")
         </div>
+        <!-- App Config  -->
         <div>
             <i class="glyphicon glyphicon-off clickable txt-anim"
                ng-click="va.batchSendingIsActive=!va.batchSendingIsActive; SetBatchSendingIsActive(va.batchSendingIsActive)"
                ng-class="va.batchSendingIsActive ? 'txt-c-green' : 'txt-c-red'">
             </i>
-            @DEBS.Translate("MessageModule.active")
+            <span>
+                @DEBS.Translate("MessageModule.active")
+            </span>
+        </div>
+
+
+        <div class="txt-s-med txt-c-gr bot-bord">
+            @DEBS.Translate("MessageModule.Sms Providers")
+        </div>
+        <!-- Sms-provs enum  -->
+        <div style="max-height: 300px; overflow-y:auto">
+            <!--Header-->
+            <div></div>
+
+            <!--Enum-->
+            <div ng-repeat="prov in va.smsProvs">
+                <div>
+
+                    <div class="col-xs-2">
+                        <i class="glyphicon glyphicon-off clickable txt-anim"
+                           ng-click="prov.IsActive=!prov.IsActive; SaveProvider(prov)"
+                           ng-class="prov.IsActive ? 'txt-c-green' : 'txt-c-red'">
+                        </i>
+                        <input class="txtinput" type="text" ng-model="prov.Name" ng-blur="SaveProvider(prov)" />
+                    </div>
+                    <div class="col-xs-2">
+                        <span>
+                            @DEBS.Translate("MessageModule.From(Name)")
+                        </span>
+                        <input class="txtinput" type="text" ng-model="prov.FromDisplayName" ng-blur="SaveProvider(prov)" />
+                    </div>
+                    <div class="col-xs-2">
+                        <span>
+                            @DEBS.Translate("MessageModule.From(PhoneNumber)")
+                        </span>
+                        <input class="txtinput" type="tel" ng-model="prov.FromPhoneNumber" ng-blur="SaveProvider(prov)" />
+                    </div>
+                    <div class="col-xs-2">
+                        <span>
+                            @DEBS.Translate("MessageModule.Username")
+                        </span>
+                        <input class="txtinput" type="text" ng-model="prov.Username" ng-blur="SaveProvider(prov)" />
+                    </div>
+                    <div class="col-xs-2">
+                        <span>
+                            @DEBS.Translate("MessageModule.Password")
+                        </span>
+                        <input class="txtinput" type="password" ng-model="prov.Password" ng-blur="SaveProvider(prov)" />
+                    </div>
+                    <div class="col-xs-1">
+                        <span>
+                            @DEBS.Translate("MessageModule.MessageInterval")
+                        </span>
+                        <input class="txtinput" type="number" ng-model="prov.MessageInterval" ng-blur="SaveProvider(prov)" />
+                    </div>
+
+                    <div class="col-xs-1">
+                        <div>
+                            <span>
+                                @DEBS.Translate("MessageModule.MaxMessages In Hour(0 is unlimited)")
+                            </span>
+                            <input class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInHour" ng-blur="SaveProvider(prov)" />
+                        </div>
+                        <div>
+                            <span>
+                                @DEBS.Translate("MessageModule.MaxMessages In Day(0 is unlimited)")
+                            </span>
+                            <input class="txtinput" type="number" ng-model="prov.RestrictionData.MaxMessagesInDay" ng-blur="SaveProvider(prov)" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
         <div class="txt-s-med txt-c-gr bot-bord">
-            @DEBS.Translate("MessageModule.Mail service")
+            @DEBS.Translate("MessageModule.Email Providers")
         </div>
-        <div>@DEBS.Translate("MessageModule.Sender address")</div>
-        <div>@DEBS.Translate("MessageModule.Port")</div>
-        <div class="txt-s-med txt-c-gr bot-bord">
-            @DEBS.Translate("MessageModule.Sms service")
+        <!-- Email-provs enum  -->
+        <div ng-repeat="prov in va.emailProvs">
+
         </div>
-        <div>@DEBS.Translate("MessageModule.Sender address")</div>
-        <div>...</div>
 
     </div>
 </div>

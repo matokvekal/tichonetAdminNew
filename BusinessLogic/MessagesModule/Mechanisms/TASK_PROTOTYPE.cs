@@ -135,7 +135,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         manager.Logic.SaveLazy(batch);
                     }
                     Logic.SaveChanges();
-                    Logic.Dispose();
+                    //Logic.Dispose();
                 }
             }
             finally {

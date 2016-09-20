@@ -119,6 +119,10 @@ var AngularApp;
             return SendProviderRestrictionData;
         }());
         Controllers.SendProviderRestrictionData = SendProviderRestrictionData;
+        function IsEmailSenderDataProviderVM(prov) {
+            return typeof prov.EnableSsl !== 'undefined';
+        }
+        Controllers.IsEmailSenderDataProviderVM = IsEmailSenderDataProviderVM;
         var EmailSenderDataProviderVM = (function () {
             function EmailSenderDataProviderVM() {
                 this.Id = -1;
@@ -156,3 +160,4 @@ var AngularApp;
         Controllers.SmsSenderDataProviderVM = SmsSenderDataProviderVM;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=SharedViewModels.js.map

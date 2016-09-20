@@ -1194,6 +1194,7 @@
     <Compile Include="Controllers\GenericApiAndMVCController.cs" />
     <Compile Include="Controllers\LinesPlanController.cs" />
     <Compile Include="Controllers\MessageModuleController.cs" />
+    <Compile Include="Controllers\Ng\EmailProviderDataController.cs" />
     <Compile Include="Controllers\Ng\FiltersController.cs" />
     <Compile Include="Controllers\Ng\MessageReportsController.cs" />
     <Compile Include="Controllers\Ng\MessageSchedulesController.cs" />
@@ -1201,6 +1202,7 @@
     <Compile Include="Controllers\Ng\BatchReportsController.cs" />
     <Compile Include="Controllers\Ng\RfiltersController.cs" />
     <Compile Include="Controllers\Ng\RFilterTableController.cs" />
+    <Compile Include="Controllers\Ng\SmsProviderDataController.cs" />
     <Compile Include="Controllers\Ng\TemplatesController.cs" />
     <Compile Include="Controllers\Ng\ViewModels\BatchReportVM.cs" />
     <Compile Include="Controllers\Ng\ViewModels\EmailSenderDataProviderVM.cs" />
@@ -1323,7 +1325,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\AppConfig\" />
-    <Folder Include="Views\GenericApiAndMVC\" />
     <Folder Include="Views\Sms\" />
   </ItemGroup>
   <ItemGroup>

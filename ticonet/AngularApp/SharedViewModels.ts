@@ -213,6 +213,10 @@
         MaxMessagesInDay: number = 1
     }
 
+    export function IsEmailSenderDataProviderVM(prov: EmailSenderDataProviderVM | SmsSenderDataProviderVM) {
+        return typeof (prov as any).EnableSsl !== 'undefined'
+    }
+
     export class EmailSenderDataProviderVM implements IIndeficated, INgViewModel {
         Id: number = -1
 
