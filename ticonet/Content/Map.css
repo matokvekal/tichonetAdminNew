@@ -264,3 +264,6 @@
         .line-table-menu a:hover {
             color: #fff;
         }
+        .has-error {
+            border-bottom-color: red !important;
+        }

@@ -3,7 +3,6 @@
 @Styles.Render("~/bundles/Home")
 @section scripts{
     @Scripts.Render("http://maps.googleapis.com/maps/api/js?language=he&libraries=places&key=" + MapHelper.ApiKey)
-    @*@Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)*@
 
 
     @Scripts.Render("~/bundles/map")
@@ -20,11 +19,10 @@
 @Html.Hidden("hfHiddenStations", (string)ViewBag.HiddenStations, new { @id = "hfHiddenStations" })
 @Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
 @Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
+@Html.Hidden("hfSimplePassword", (string)ViewBag.SimplePassword, new { @id = "hfSimplePassword" })
 <div class="map-canvas" id="map-canvas" style=""></div>
-
 <div id="dSearchBar" class="row">
     <div class="glyphicon glyphicon-search col-lg-1 col-md-1 col-sm-1 col-xs-1" aria-hidden="true" id="btSearch"></div>
-
     <div id="dSearchForm" class=" col-lg-11 col-md-11 col-sm-11 col-xs-11">
         <div class="input-group">
             <input type="text" class="form-control" id="tbSearch" />
@@ -160,29 +158,29 @@
             </div>
             <div class="row message">
                 @*<input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate" />
-                <input type="number" id="tbAttachHours" style="width: 40px; margin-left: 20px;" name="Hours" />
-                <span>:</span>
-                <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />*@
+                    <input type="number" id="tbAttachHours" style="width: 40px; margin-left: 20px;" name="Hours" />
+                    <span>:</span>
+                    <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />*@
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox"/>mon
+                    <input type="checkbox" name="Mon" />mon
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />tue
+                    <input type="checkbox" name="Tue" />tue
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />wed
+                    <input type="checkbox" name="Wed" />wed
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />thu
+                    <input type="checkbox" name="Thu" />thu
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />fri
+                    <input type="checkbox" name="Fri" />fri
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />sat
+                    <input type="checkbox" name="Sat" />sat
                 </div>
                 <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
-                    <input type="checkbox" />sun
+                    <input type="checkbox" name="Sun" />sun
                 </div>
             </div>
         </div>
@@ -312,7 +310,6 @@
 <div id="dlgTimeTable" title="Time table" style="display: none;">
     <input type="hidden" id="hfTTLineId" />
     <div id="dTTMessage" style="text-align: center;" class="row">
-
     </div>
     <div class="row form-horizontal text-center">
         <input type="number" id="tbTTHours" class="form-inline" style="width: 50px;" />
@@ -324,18 +321,13 @@
         <table id="tblTTGrid"></table>
     </div>
 </div>
-
 <div id="dlgStudAddr" title="Student Address" style="display: none;">
     <form id="frmStudAddr" class="form-inline">
-
         <input type="hidden" name="StudentId" />
         <div class="container">
-
             <div>
                 <div class="label">City</div>
-
                 <input type="text" class="form-control input-xs" placeholder="City" name="City" />
-
                 <input type="hidden" name="CityId" />
             </div>
             <div>
@@ -350,6 +342,14 @@
             <div class="text-center">IMPORTANT:  Student will be removed from all stations!</div>
         </div>
     </form>
-
+</div>
+<div id="dlgAdvConfirm" title="Confirm" style="display: none;">
+    <div class="text-center" id="dAComfirmMessage"></div>
+    <div class="container" style="margin-top: 20px;">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="text-align: right;">Password</div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6"><input id="txtAConfirmPass" class="form-control input-sm" /></div>
+        
+        
+    </div>
 </div>
 @*End Dialogs*@

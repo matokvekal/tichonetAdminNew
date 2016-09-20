@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Business_Logic.Enums;
 using Business_Logic.Dtos;
+using Business_Logic.Entities;
 
 namespace Business_Logic
 {
@@ -330,7 +331,7 @@ namespace Business_Logic
             return res;
         }
 
-        public bool AttachStudent(int studentId, int stationId, int? lineId, int distance, ColorMode colorMode, DateTime? date, ConflictActions action)
+        public bool AttachStudent(int studentId, int stationId, int? lineId, int distance, ColorMode colorMode, DateTime? date, ConflictActions action, WeekDays weekdays)
         {
             var res = false;
             try
@@ -339,13 +340,13 @@ namespace Business_Logic
                 {
                     //Remove duplicate
                     var duplicates = DB.StudentsToLines
-                        .Where(z => z.StudentId == studentId && z.Date == null)
+                        .Where(z => z.StudentId == studentId && z.Date == null && z.mon != true && z.tue != true && z.wed != true && z.thu != true && z.fri != true && z.sat != true && z.sun != true)
                         .ToList();
 
                     DateTime? dt = null;
                     if (duplicates.Any())
                     {
-                        if (action == ConflictActions.Replace || date == null)
+                        if (action == ConflictActions.Replace || (date == null && weekdays.NothingSelected ))
                         {
                             DB.StudentsToLines.RemoveRange(duplicates);
                             DB.SaveChanges();
@@ -386,7 +387,14 @@ namespace Business_Logic
                         color = student.Color,
                         Date = dt,
                         Direction = direction,
-                        distanceFromStation = distance
+                        distanceFromStation = distance,
+                        mon = weekdays.Monday,
+                        tue = weekdays.Tuesday,
+                        wed = weekdays.Wednesday,
+                        thu = weekdays.Thursday,
+                        fri = weekdays.Friday,
+                        sat = weekdays.Saturday,
+                        sun = weekdays.Sunday
                     };
                     DB.StudentsToLines.Add(item);
                     DB.SaveChanges();

@@ -117,8 +117,9 @@
         $('<input />', { type: 'checkbox', id: 'cbAll', checked: "checked" }).appendTo($("#grStudents_show"));
         $("#cbAll").click(function (event) {
             var s = $(this).prop("checked");
-            for (var j = 0; j < smap.students.length; j++) {
-                smap.table.swithMarker(smap.students[j].Id, s);
+            var ids = smap.table.studentsGrid.jqGrid('getDataIDs');
+            for (var j = 0; j < ids.length; j++) {
+                smap.table.swithMarker(ids[j], s);
             }
         });
 
@@ -220,8 +221,8 @@
                             { name: 'ArrivalDateString', width: 100, align: 'center' }
                         ]
                     });
-                    smap.table.refreshSbGrd(rowId)
-                    smap.table.sortByDefSbGrd()
+                    smap.table.refreshSbGrd(rowId);
+                    smap.table.sortByDefSbGrd();
                 }
 
             });
@@ -237,6 +238,20 @@
         smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
         smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
 
+        // Show/hide all lines
+        $('<input />', { type: 'checkbox', id: 'cbLinesAll', checked: "checked" }).appendTo($("#grLines_show"));
+        $('#cbLinesAll').click(function() {
+            var s = $('#cbLinesAll').prop("checked");
+            var ids = smap.table.linesGrid.jqGrid('getDataIDs');
+            for (var n in ids) {
+                if (s) {
+                    smap.lines.showLine(ids[n]);
+                } else {
+                    smap.lines.hideLine(ids[n]);
+                }
+            }
+            
+        });
 
         //Hide buttons "Clear search"
         $(".ui-search-clear").remove();

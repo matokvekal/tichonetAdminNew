@@ -21,7 +21,7 @@
             var index = smap.lines.list.indexOf(oldline);
             smap.lines.list[index] = line;
             smap.table.linesGrid.setRowData(line.Id, line);
-            //smap.ways = null; //TODO: Redid for save old ways
+
         } else {
             smap.lines.list.push(line);
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
@@ -36,6 +36,7 @@
         if (!(line.Stations)) return;
         if (line.Stations.length < 2) return;
         line.show = true;
+        smap.table.linesGrid.setRowData(line.Id, line);
 
         smap.lines.calcLine(id, function (line) {
             for (var i in line.ways) {
@@ -141,8 +142,8 @@
                 }
             }
             if (!smap.lines.notSaveGeometry) smap.lines.saveGeometry(line);
-          
-           
+
+
         });
     },
     calcValues: null,
@@ -298,8 +299,8 @@
             });
         }
         // console.log(data);
-        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)), Durations: durations})
-            .done(function(loader) {
+        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)), Durations: durations })
+            .done(function (loader) {
                 if (loader.length > 0) {
                     var ln = smap.getLine(loader[0].LineId);
                     for (var i in loader) {
@@ -324,14 +325,18 @@
                 line.ways[i].display.setMap(null);
             }
             smap.lines.overlay.showLineOverlay();
+            smap.table.linesGrid.setRowData(line.Id, line);
         }
+
+
     },
     resetWays: function (id) {
-        var ln = smap.getLine(id);
-        smap.lines.hideLine(id);
-        ln.ways = null;
-        smap.lines.showLine(id);
-
+        smap.UI.showAdvConfirm("Reset all route changes for this line and use google navigation?", function () {
+            var ln = smap.getLine(id);
+            smap.lines.hideLine(id);
+            ln.ways = null;
+            smap.lines.showLine(id);
+        });
     },
     getColor: function (id) {
         var line = smap.getLine(id);
@@ -518,7 +523,7 @@
         $.post("/api/map/SaveDurations", smap.lines.durations).done(function (loader) {
             console.log("Save duration. Done");
             smap.restoryWays(loader);
-         
+
             smap.lines.updateLine(loader, true);
             if (smap.lines.ttGrid != null)
                 for (var i in loader.Stations) {

@@ -8,6 +8,7 @@
     checkDistanceStudents: [],
     graphicElements: [],
     attachGrid: null,
+    simplePassword: function () { return $("#hfSimplePassword").val(); },
     init: function () {
 
 
@@ -511,13 +512,15 @@
         }
         smap.graphicElements = [];
     },
+    scheduleTabledata:null,
     showSchedule: function (studentId) {
         smap.closeConextMenu();
 
         $("#hfAttachListStationId").val(studentId);
         var st = smap.getStudent(studentId);
         if (st != null) $("#dAttachName").html(st.Name);
-
+        smap.scheduleTabledata = smap.getAttachInfo(studentId);
+       
         if (smap.attachGrid == null) {
             smap.attachGrid = $("#dScheduleGrid").jqGrid({
                 datatype: "clientSide",
@@ -534,19 +537,62 @@
                 emptyrecords: 'No lines',
                 sortable: true,
                 altclass: "ui-state-default",
-                colNames: ["Line", "Station", "Distance", "Date", "Time", ""],
+                colNames: ["Line", "Station", "Distance", "Schedule",  ""],
                 colModel: [
                     { name: 'LineId', width: 50, align: 'center', formatter: smap.table.lineNameFormatter },
                     { name: 'StationId', width: 100, align: 'center', formatter: smap.table.stationNameFormatter },
                     { name: 'Distance', width: 100, align: 'center', formatter: smap.table.simpleDistanceFormatter },
-                    { name: 'StrDate', width: 100, align: 'center' },
-                    { name: 'StrTime', width: 50, align: 'center' },
+                    { name: 'Id', width: 150, align: 'center', formatter: function(cellvalue, options, rowObject) {
+                        var res = "";
+                        var dt = smap.scheduleTabledata;
+                        for (var j in dt) {
+                            if (dt.hasOwnProperty(j)) {
+                                if (dt[j].Id == cellvalue) {
+                                    if (dt[j].Mon)
+                                        res += "Mo ";
+                                    else 
+                                        res += "- ";
+                                    
+                                    if (dt[j].Tue)
+                                        res += "Tu ";
+                                    else
+                                        res += "- ";
+
+                                    if (dt[j].Wed)
+                                        res += "Wd ";
+                                    else
+                                        res += "- ";
+
+                                    if (dt[j].Thu)
+                                        res += "Th ";
+                                    else
+                                        res += "- ";
+
+                                    if (dt[j].Fri)
+                                        res += "Fr ";
+                                    else
+                                        res += "- ";
+
+                                    if (dt[j].Sat)
+                                        res += "St ";
+                                    else
+                                        res += "- ";
+
+                                    if (dt[j].Sun)
+                                        res += "Sn ";
+                                    else
+                                        res += "- ";
+                                }
+                            }
+                        }
+                        return res;
+                    } },
                     { name: 'Id', width: 50, align: 'center', formatter: smap.table.attachActionFormatter }
                 ]
             });
         }
         smap.attachGrid.jqGrid("clearGridData");
-        var data = smap.getAttachInfo(studentId);
+        var data = smap.scheduleTabledata;
         for (var i in data) {
             smap.attachGrid.jqGrid('addRowData', data[i].Id, data[i]);
         }
@@ -571,7 +617,7 @@
             buttons: {
                 "Delete": function () {
                     $.post("/api/stations/DeleteAttachStudent/" + id, null).done(function (loader) {
-                        console.log(loader);
+                        
                         for (var k in loader.Lines) {
                             smap.lines.updateLine(loader.Lines[k]);
                         }
