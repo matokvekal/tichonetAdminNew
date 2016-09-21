@@ -9,6 +9,8 @@
     graphicElements: [],
     attachGrid: null,
     simplePassword: function () { return $("#hfSimplePassword").val(); },
+    allowRouteEdit: false,
+    showLabels: false,
     init: function () {
 
 
@@ -20,6 +22,9 @@
         if ($("#hfCenterLat").length > 0) latCenter = $("#hfCenterLat").val();
         if ($("#hfCenterLng").length > 0) lngCenter = $("#hfCenterLng").val();
         if ($("#hfZoom").length > 0) intZoom = parseInt($("#hfZoom").val());
+        
+        smap.allowRouteEdit = ($("#hfRouteEdit").val().toLowerCase() == "true");
+        smap.showLabels = ($("#hfShowLabels").val().toLowerCase() == "true");
         smap.showStationsWithoutLines = ($("#hfShowStations").val().toLowerCase() == "true");
         smap.showStationsVisibleButton();
 

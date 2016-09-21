@@ -110,7 +110,7 @@
     },
     getRenderOptions: function (line) {
         var rendererOptions = {
-            draggable: true,
+            draggable: smap.allowRouteEdit,
             hideRouteList: true,
             preserveViewport: true,
             markerOptions: {

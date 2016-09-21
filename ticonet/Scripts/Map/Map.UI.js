@@ -358,7 +358,7 @@
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     },
     swithFirstLineStations: function (e) {
-        
+
         var rel = $(e.target).attr("rel");
         var ref = $(e.target).attr("ref");
         var checked = $(e.target).prop("checked");
@@ -371,22 +371,69 @@
         }
     },
     showLineMenu: function (id, e) {
-        $("#dLineMenu").remove();
+        smap.UI.hideLineMenu();
         var coffset = $("#map-canvas").offset();
         var offset = $(e.target).offset();
         $("<div id='dLineMenu' class='line-table-menu'></div>").appendTo("#map-canvas");
-        $("#dLineMenu").css("top", (offset.top - coffset.top+15) + "px").css("left", (offset.left - coffset.left-70) + "px");
+        $("#dLineMenu").css("top", (offset.top - coffset.top + 15) + "px").css("left", (offset.left - coffset.left - 70) + "px");
         $("<div><a href='javascript:smap.lines.showTimeTable(" + id + ");smap.UI.hideLineMenu();'>Time Table</a></div>").appendTo("#dLineMenu");
         $("<div><a href='javascript:smap.lines.lineStationsVisibleSwitch(" + id + ");smap.UI.hideLineMenu();' ><span>Show / hide stations</span></a></div>").appendTo("#dLineMenu");
         $("<div><a href='javascript:smap.lines.resetWays(" + id + ");smap.UI.hideLineMenu();'>Recalc route</a></div>").appendTo("#dLineMenu");
-        e.stopPropagation();;
+        e.stopPropagation();
         return false;
-        
+
     },
-    hideLineMenu: function() {
+    showMapOptionsMenu: function (e) {
+
+        smap.UI.hideLineMenu();
+        var coffset = $("#map-canvas").offset();
+        var offset = $(e.target).offset();
+        $("<div id='dLineMenu' class='line-table-menu'></div>").appendTo("#map-canvas");
+        $("#dLineMenu").css("top", (offset.top - coffset.top + 30) + "px")
+            .css("left", (offset.left - coffset.left - 70) + "px")
+            .css("width", "150px");
+        $("<div><input type='checkbox' id='cbMSRouteEdit'/><span>Allow edit routes</span></div>").appendTo("#dLineMenu");
+        if (smap.allowRouteEdit) {
+            $("#cbMSRouteEdit").prop("checked", "checked");
+        }
+        $("#cbMSRouteEdit").change(function () {
+            smap.allowRouteEdit = $(this).prop("checked");
+            // set draggable option for all DirectionsRenderers
+            for (var i in smap.lines.list) {
+                if (smap.lines.list.hasOwnProperty(i)) {
+                    var line = smap.lines.list[i];
+                    if (line.ways) {
+                        for (var j in line.ways) {
+                            if (line.ways.hasOwnProperty(j)) {
+                                if (line.ways[j].display) {
+                                    line.ways[j].display.setOptions({
+                                        draggable: smap.allowRouteEdit
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $.post("/api/map/SaveSettings", { Name: 'editRoutes', Value: smap.allowRouteEdit.toString() });
+        });
+        $("<div><input type='checkbox' id='cbMSShowLabels'/><span>Show station labels</span></div>").appendTo("#dLineMenu");
+        if (smap.showLabels) {
+            $("#cbMSShowLabels").prop("checked", "checked");
+        }
+        $("#cbMSShowLabels").change(function () {
+            smap.showLabels = $(this).prop("checked");
+            smap.lines.overlay.showLineOverlay();
+            $.post("/api/map/SaveSettings", { Name: 'showLabels', Value: smap.showLabels.toString() });
+
+        });
+        e.stopPropagation();
+        return false;
+    },
+    hideLineMenu: function () {
         $("#dLineMenu").remove();
     },
-    showAdvConfirm:function(message, callback) {
+    showAdvConfirm: function (message, callback) {
         $("#dAComfirmMessage").html(message);
         $("#txtAConfirmPass").removeClass("has-error");
         $("#txtAConfirmPass").val("");
@@ -395,7 +442,7 @@
             width: 350,
             modal: true,
             buttons: {
-                "Yes":function() {
+                "Yes": function () {
                     if ($("#txtAConfirmPass").val() == smap.simplePassword()) {
                         $("#txtAConfirmPass").val("");
                         dlg.dialog("close");
@@ -404,7 +451,7 @@
                         $("#txtAConfirmPass").addClass("has-error");
                     }
                 },
-                "No":function() {
+                "No": function () {
                     $("#txtAConfirmPass").val("");
                     dlg.dialog("close");
                 }

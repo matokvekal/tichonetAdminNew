@@ -115,7 +115,7 @@ LineOverlay.prototype.draw = function () {
         lb.div.style.left = p.x + 'px';
         lb.div.style.top = p.y + 'px';
     }
-    if (smap.mainMap.getZoom() <= 14) {
+    if (smap.mainMap.getZoom() <= 14 || !smap.showLabels) {
         this.hide();
     } else {
         this.show();
