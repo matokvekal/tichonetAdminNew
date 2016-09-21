@@ -107,6 +107,21 @@ namespace ticonet.Controllers.Ng {
                 return NgResultToJsonResult(NgResult.Succes(msg));
             }
         }
+
+        [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+        public JsonResult ClearPendingMessagesQueue()
+        {
+            using (var l = new MessagesModuleLogic())
+            {
+                var messages = l.GetAll<tblPendingMessagesQueue>();
+                l.DeleteRange(messages);
+                var msgBuilder = new StringBuilder();
+                msgBuilder.AppendLine(DEBS.Translate("MessageMdl.Pending messages queue was cleaned"));
+                var msg = msgBuilder.ToString();
+                return NgResultToJsonResult(NgResult.Succes(msg));
+            }
+        }
+
     }
 
 }

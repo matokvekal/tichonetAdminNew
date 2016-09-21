@@ -20,3 +20,4 @@ var TranslatonUtils;
     }());
     TranslatonUtils.Translator = Translator;
 })(TranslatonUtils || (TranslatonUtils = {}));
+//# sourceMappingURL=TranslatonUtils.js.map

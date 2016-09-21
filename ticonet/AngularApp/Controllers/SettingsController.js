@@ -23,6 +23,7 @@ var AngularApp;
                 this.initData = function () {
                     _this.fetchtoarr(true, { urlalias: "getsmsprovs" }, _this.va.smsProvs, true);
                     _this.fetchtoarr(true, { urlalias: "getemailprovs" }, _this.va.emailProvs, true);
+                    _this.getBatchSendingIsActive("getappconfig", function (state) { _this.va.batchSendingIsActive = state; });
                 };
                 this.saveProvider = function (prov, callback) {
                     var mode = prov.ng_JustCreated ? "cr" : "up";
@@ -57,8 +58,31 @@ var AngularApp;
                     };
                     _this.saveProvider(newProv, cb);
                 };
-                this.refetchBatchSendingIsActive = function (isActive) {
-                    //TODO Update config
+                this.updateBatchSendingIsActive = function (urlalias, isActive) {
+                    $.ajax({
+                        url: _this.url(urlalias),
+                        data: { settings: { 'BatchSendingIsActive': isActive } },
+                        type: 'POST',
+                    });
+                };
+                this.getBatchSendingIsActive = function (urlalias, onSucces) {
+                    $.ajax({
+                        url: _this.url(urlalias),
+                        data: { settings: 'BatchSendingIsActive' },
+                        type: 'POST',
+                        success: function (data) {
+                            onSucces(data['BatchSendingIsActive']);
+                        }
+                    });
+                };
+                this.clearPendingMessagesQueue = function (urlalias, onSucces) {
+                    $.ajax({
+                        url: _this.url(urlalias),
+                        type: 'POST',
+                        success: function (data) {
+                            onSucces(data['message']);
+                        }
+                    });
                 };
             }
             SettingsController.prototype.buildVa = function () { return new SettingsVA; };
@@ -79,7 +103,10 @@ var AngularApp;
                 this.scope.CreateSmsProvider = function () { return _this.createProvider(true); };
                 this.scope.CreateEmailProvider = function () { return _this.createProvider(false); };
                 this.scope.SetBatchSendingIsActive = function (isActive) {
-                    _this.refetchBatchSendingIsActive(isActive);
+                    _this.updateBatchSendingIsActive("updateappconfig", isActive);
+                };
+                this.scope.ClearPendingMessagesQueue = function () {
+                    _this.clearPendingMessagesQueue("clearpendingmessagesqueue", _this.request_msgHandlerSucces);
                 };
                 //Inner Init
                 this.initUrlModuleFromRowObj(data.urls);
@@ -90,3 +117,4 @@ var AngularApp;
         Controllers.SettingsController = SettingsController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=SettingsController.js.map

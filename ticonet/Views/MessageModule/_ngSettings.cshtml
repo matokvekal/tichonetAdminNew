@@ -3,6 +3,7 @@
 <div ng-controller="SettingsController"
      data-ng-init="init({
         urls: {
+            clearpendingmessagesqueue: '@Url.Action("ClearPendingMessagesQueue","MessageSchedules")',
             updateappconfig: '@Url.Action("Update","AppConfig")',
             getappconfig: '@Url.Action("Get","AppConfig")',
             getsmsprovs: '@Url.Action("Fetch","SmsProviderData")',
@@ -37,12 +38,15 @@
         </div>
         <!-- App Config  -->
         <div>
-            <i class="glyphicon glyphicon-off clickable txt-anim"
-               ng-click="va.batchSendingIsActive=!va.batchSendingIsActive; SetBatchSendingIsActive(va.batchSendingIsActive)"
-               ng-class="va.batchSendingIsActive ? 'txt-c-green' : 'txt-c-red'">
-            </i>
             <span>
-                @DEBS.Translate("MessageModule.active")
+                <i class="glyphicon glyphicon-off clickable txt-anim"
+                   ng-click="va.batchSendingIsActive=!va.batchSendingIsActive; SetBatchSendingIsActive(va.batchSendingIsActive)"
+                   ng-class="va.batchSendingIsActive ? 'txt-c-green' : 'txt-c-red'">
+                    @DEBS.Translate("MessageModule.Active")
+                </i>
+                <i class="glyphicon glyphicon-trash iconclick" ng-click="ClearPendingMessagesQueue()" ng-if="!va.batchSendingIsActive">
+                    @DEBS.Translate("MessageModule.Clear pending messages queue")
+                </i>
             </span>
         </div>
 
@@ -205,4 +209,5 @@
 
     </div>
 </div>
+
 

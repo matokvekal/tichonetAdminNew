@@ -36,7 +36,11 @@
 
 
             this.scope.SetBatchSendingIsActive = (isActive: boolean) => {
-                this.refetchBatchSendingIsActive(isActive);
+                this.updateBatchSendingIsActive("updateappconfig", isActive);
+            }
+
+            this.scope.ClearPendingMessagesQueue = () => {
+                this.clearPendingMessagesQueue("clearpendingmessagesqueue", this.request_msgHandlerSucces);
             }
 
             //Inner Init
@@ -47,6 +51,7 @@
         initData = () => {
             this.fetchtoarr(true, { urlalias: "getsmsprovs" }, this.va.smsProvs, true)
             this.fetchtoarr(true, { urlalias: "getemailprovs" }, this.va.emailProvs, true)
+            this.getBatchSendingIsActive("getappconfig", (state: boolean) => { this.va.batchSendingIsActive = state })
         }
 
         saveProvider = (prov: EmailSenderDataProviderVM | SmsSenderDataProviderVM, callback?: (r) => void) => {
@@ -87,8 +92,33 @@
             this.saveProvider(newProv,cb)
         }
 
-        refetchBatchSendingIsActive = (isActive: boolean) => {
-            //TODO Update config
+        updateBatchSendingIsActive = (urlalias: string, isActive: boolean) => {
+            $.ajax({
+                url: this.url(urlalias),
+                data: { settings: { 'BatchSendingIsActive': isActive } },
+                type: 'POST',
+            });
+        }
+
+        getBatchSendingIsActive = (urlalias: string, onSucces?: (r) => void) => {
+            $.ajax({
+                url: this.url(urlalias),
+                data: { settings: 'BatchSendingIsActive' },
+                type: 'POST',
+                success: function (data) {
+                    onSucces(data['BatchSendingIsActive'])
+                }
+            });
+        }
+
+        clearPendingMessagesQueue = (urlalias: string, onSucces?: (r) => void) => {
+            $.ajax({
+                url: this.url(urlalias),
+                type: 'POST',
+                success: function (data) {
+                    onSucces(data['message'])
+                }
+            });
         }
 
     }

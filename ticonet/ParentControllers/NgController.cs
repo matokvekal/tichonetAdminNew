@@ -1,4 +1,4 @@
-﻿//#define EAT_EXCEPTIONS
+﻿#define EAT_EXCEPTIONS
 
 using Business_Logic.MessagesModule;
 using System.Collections.Generic;

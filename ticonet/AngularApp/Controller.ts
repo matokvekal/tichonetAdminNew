@@ -144,7 +144,7 @@
             (urls: Object) =>{
                 this.urls = new col.Dictionary<string>(urls)
             }
-        private url = (alias: string) => {
+        protected url = (alias: string) => {
             return this.urls.take(alias)
         }
 

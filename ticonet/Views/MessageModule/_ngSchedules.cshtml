@@ -27,13 +27,13 @@
             <!-- Grid/Enumeration Settings -->
             <div class="grid-settings-box col-xs-12 clearfix txt-c-gr">
                 <div class="col-xs-1">
-                    <div class="txt-anim hover-highlight clickable txt-c-gr" 
-                          ng-click="va.gridSettings.IsSms=!va.gridSettings.IsSms; RefetchSchedules()">
-                        <i ng-class="va.gridSettings.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" 
+                    <div class="txt-anim hover-highlight clickable txt-c-gr"
+                         ng-click="va.gridSettings.IsSms=!va.gridSettings.IsSms; RefetchSchedules()">
+                        <i ng-class="va.gridSettings.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
                            class="glyphicon"></i> @DEBS.Translate("MessageModule.sms")
                     </div>
                     <div class="txt-anim hover-highlight clickable txt-c-gr"
-                          ng-click="va.gridSettings.IsEmail=!va.gridSettings.IsEmail; RefetchSchedules()">
+                         ng-click="va.gridSettings.IsEmail=!va.gridSettings.IsEmail; RefetchSchedules()">
                         <i ng-class="va.gridSettings.IsEmail ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
                            class="glyphicon"></i> @DEBS.Translate("MessageModule.mail")
                     </div>
@@ -179,8 +179,8 @@
                         <!--Type (sms or email) -->
                         <div>
                             <span class="txt-c-grmore clickable" ng-click="va.cursched.IsSms=!va.cursched.IsSms">
-                                <i ng-class="va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> sms
-                                <i ng-class="!va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> mail
+                                <i ng-class="va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick">@DEBS.Translate("MessageModule.sms")</i>
+                                <i ng-class="!va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick">@DEBS.Translate("MessageModule.mail")</i>
                             </span>
                         </div>
 

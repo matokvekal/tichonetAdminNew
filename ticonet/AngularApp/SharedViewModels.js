@@ -160,3 +160,4 @@ var AngularApp;
         Controllers.SmsSenderDataProviderVM = SmsSenderDataProviderVM;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=SharedViewModels.js.map

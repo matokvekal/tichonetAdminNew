@@ -637,3 +637,9 @@
             box-shadow: 0 0 7px 0 rgba(29, 29, 29, 0.6) inset;
         }
 
+        div.max-height-limited{
+            max-height: 3em;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
