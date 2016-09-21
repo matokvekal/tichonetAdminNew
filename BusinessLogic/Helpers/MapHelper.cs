@@ -16,6 +16,8 @@ namespace Business_Logic.Helpers
         const double DefaultLng = 34.889135;
         const int DefaultZoom = 12;
         const string DefaultSimplePassword = "1234";
+        const bool DefaultEditRoute = true;
+        const bool DefaultShowMapLabels = true;
 
         public static Double CenterLat
         {
@@ -164,6 +166,41 @@ namespace Business_Logic.Helpers
                 SettingsHelper.SetSettingValue("Map", "SimplePassword", value);
             }
         }
+
+        public static bool RoutEditMode
+        {
+            get
+            {
+                var p = SettingsHelper.GetSettingValue("Map", "RoutEditMode");
+                bool r;
+                if (bool.TryParse(p, out r)) return r;
+                r = DefaultEditRoute;
+                SettingsHelper.SetSettingValue("Map", "RoutEditMode",r.ToString());
+                return r;
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "RoutEditMode", value.ToString() );
+            }
+        }
+
+        public static bool ShowMapLabels
+        {
+            get
+            {
+                var p = SettingsHelper.GetSettingValue("Map", "ShowMapLabels");
+                bool r;
+                if (bool.TryParse(p, out r)) return r;
+                r = DefaultShowMapLabels;
+                SettingsHelper.SetSettingValue("Map", "ShowMapLabels", r.ToString());
+                return r;
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "ShowMapLabels", value.ToString());
+            }
+        }
+
 
         public static bool IsPointInCircle(double latPoint, double lonPoint, double latCenterCircle, double lonCenterCircle, double radius)
         {
