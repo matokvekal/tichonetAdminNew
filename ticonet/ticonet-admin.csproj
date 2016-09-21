@@ -1251,6 +1251,7 @@
     <Compile Include="Models\FamilyModel.cs" />
     <Compile Include="Models\LinesPlanApiModel.cs" />
     <Compile Include="Models\SaveGeometryModel.cs" />
+    <Compile Include="Models\SaveSettingsModel.cs" />
     <Compile Include="Models\ScheduleItemModel.cs" />
     <Compile Include="Models\EventModel.cs" />
     <Compile Include="Models\GridLineBusModel.cs" />

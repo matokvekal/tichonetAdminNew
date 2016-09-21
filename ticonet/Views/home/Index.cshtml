@@ -20,6 +20,8 @@
 @Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
 @Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
 @Html.Hidden("hfSimplePassword", (string)ViewBag.SimplePassword, new { @id = "hfSimplePassword" })
+@Html.Hidden("hfRouteEdit",(bool)ViewBag.RouteEdit, new { @id = "hfRouteEdit" })
+@Html.Hidden("hfShowLabels", (bool)ViewBag.ShowLabels, new { @id = "hfShowLabels" })
 <div class="map-canvas" id="map-canvas" style=""></div>
 <div id="dSearchBar" class="row">
     <div class="glyphicon glyphicon-search col-lg-1 col-md-1 col-sm-1 col-xs-1" aria-hidden="true" id="btSearch"></div>
@@ -44,6 +46,9 @@
             </a>
             <a href="javascript:smap.refreshColor();" title="RefreshColor" style="margin-left: 5px;">
                 <span class="glyphicon glyphicon-repeat" id="icoRepeatBtn"></span>
+            </a>
+            <a href="#" onclick="smap.UI.showMapOptionsMenu(event)" title="Map settings" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-globe" id="icoOptionsBtn"></span>
             </a>
             <a href="javascript:smap.saveState();" title="Save state" style="margin-left: 5px;"><span id="icoSaveBtn" class="glyphicon glyphicon-floppy-disk"></span></a>
             <span style="margin-left: 5px; font-size: 10pt;" id="spStatus"></span>
