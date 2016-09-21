@@ -22,6 +22,8 @@ namespace ticonet.Controllers
             ViewBag.HiddenStudents = JsonConvert.SerializeObject(MapHelper.HiddenStudents);
             ViewBag.ShowStations = MapHelper.ShowStationsWithoutLine;
             ViewBag.SimplePassword = MapHelper.SimplePassword;
+            ViewBag.RouteEdit = MapHelper.RoutEditMode;
+            ViewBag.ShowLabels = MapHelper.ShowMapLabels;
             return View();
         }
     }

@@ -94,19 +94,19 @@ namespace ticonet.Controllers
         [ActionName("SaveGeometry")]
         public List<StationToLineModel> PostSaveGeometry(SaveGeometryModel model)
         {
-            var res = new List<StationToLineModel>() ;
+            var res = new List<StationToLineModel>();
             using (var logic = new LineLogic())
             {
                 var line = logic.GetLine(model.Id);
-                if (line!= null)
+                if (line != null)
                 {
                     line.PathGeometry = model.Data;
                     logic.SaveChanges();
 
                     string fs = "0:0";
                     StationsToLine st = null;
-                    st = line.Direction == 0 ? line.StationsToLines.OrderBy(s=>s.Position).Last() : line.StationsToLines.OrderBy(s => s.Position).First();
-                    if (line.StationsToLines.Select(l => l.ArrivalDate).Max() > st.ArrivalDate && line.Direction==0)
+                    st = line.Direction == 0 ? line.StationsToLines.OrderBy(s => s.Position).Last() : line.StationsToLines.OrderBy(s => s.Position).First();
+                    if (line.StationsToLines.Select(l => l.ArrivalDate).Max() > st.ArrivalDate && line.Direction == 0)
                         st.ArrivalDate = line.StationsToLines.Select(l => l.ArrivalDate).Max();
                     fs = st.ArrivalDate.Hours + ":" + st.ArrivalDate.Minutes;
                     var data = new SaveDurationsModel
@@ -119,7 +119,7 @@ namespace ticonet.Controllers
                     if (ln != null)
                     {
                         res = ln.StationsToLines
-                            .OrderBy(z=>z.Position)
+                            .OrderBy(z => z.Position)
                             .Select(z => new StationToLineModel(z))
                             .ToList();
                     }
@@ -193,6 +193,29 @@ namespace ticonet.Controllers
             return res;
         }
 
+        //string name, string value
+        [ActionName("SaveSettings")]
+        public bool PostSaveSettings(SaveSettingsModel data)
+        {
+            try
+            {
+                switch (data.Name.ToLower())
+                {
+                    case "showlabels":
+                        MapHelper.ShowMapLabels = Boolean.Parse(data.Value);
+                        break;
+                    case "editroutes":
+                        MapHelper.RoutEditMode = Boolean.Parse(data.Value);
+                        break;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+        }
 
         [HttpPost]
         public bool RefreshColor()
@@ -204,4 +227,5 @@ namespace ticonet.Controllers
         }
 
     }
+
 }
